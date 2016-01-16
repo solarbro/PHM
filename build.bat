@@ -1,0 +1,2 @@
+cd buildScripts
+start BuildSerpent
