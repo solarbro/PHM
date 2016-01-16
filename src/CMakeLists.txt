@@ -87,10 +87,12 @@ SET (CMAKE_ARCHIVE_OUTPUT_DIRECTORY
    "Single Directory for all static libraries.")
 ENDIF( EX_PLATFORM EQUAL 64 )
 
+INCLUDE(setlibloc)
 ################FINDING LIBRARY PACKAGES###########################
+MESSAGE(${GTEST_ROOT})
+FIND_PACKAGE(GTEST REQUIRED)
 
 ################FINDING LIBRARY PACKAGES###########################
-
 
 FOREACH(subdir ${SUBDIRS})
 	IF(subdir STREQUAL ".idea")

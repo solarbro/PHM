@@ -115,7 +115,7 @@ ENDIF(EX_PLATFORM EQUAL 64)
 ############################ExternalDependencies###############################
 #################################DONT TOUCH####################################
 
-INCLUDE_DIRECTORIES(${ASSIMP_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
 
 IF(MAKE_EXECUTABLE STREQUAL TRUE)
  #Make the folder name the same name as the solution
@@ -128,12 +128,13 @@ ENDIF(MAKE_EXECUTABLE STREQUAL TRUE)
 
 #Putting this executable project in a folder
 SET_TARGET_PROPERTIES (${ProjectName} PROPERTIES
-    FOLDER Libraries/Static)
+    FOLDER Executable)
 #######################FINDING LIBS CUSTOM###################################
 #######################FINDING LIBS CUSTOM###################################
 
 IF(WIN32)
   TARGET_LINK_LIBRARIES(${ProjectName} "opengl32.lib")
+  TARGET_LINK_LIBRARIES(${ProjectName} ${GTEST_LIBRARY})
 ELSEIF(UNIX)
   TARGET_LINK_LIBRARIES(${ProjectName} "libGL.so")
 ENDIF(WIN32)
