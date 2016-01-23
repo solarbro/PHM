@@ -192,5 +192,14 @@ namespace phm
   *       cross(v1, v2)
   */
 
+  template<typename T1, typename T2>
+  type_vec<ptype<T1, T2>, 3> cross(const type_vec<T1, 3> &v1, const type_vec<T2, 3> &v2)
+  {
+    return type_vec<ptype<T1, T2>, 3>(
+      static_cast<ptype<T1, T2>>(v1[1] * v2[2] - v1[2] * v2[1]),
+      static_cast<ptype<T1, T2>>(v1[2] * v2[0] - v1[0] * v2[2]),
+      static_cast<ptype<T1, T2>>(v1[0] * v2[1] - v1[1] * v2[0])
+      );
+  }
 
 }

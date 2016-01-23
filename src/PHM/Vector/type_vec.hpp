@@ -34,6 +34,7 @@ namespace phm
     /*************************************
     *               CTORS                *
     *************************************/
+#pragma region CTORS
     type_vec()
     {
       for (unsigned i = 0; i < D; ++i)
@@ -74,6 +75,7 @@ namespace phm
       for (unsigned i = from_v; i < D; ++i)
         v[i] = static_cast<T>(temp[i - from_v]);
     }
+#pragma endregion CTORS
 
     /*************************************
     *             OPERATORS              *
@@ -112,7 +114,7 @@ namespace phm
   {
     for (unsigned i = 0; i < D; ++i)
     {
-      if (static_cast<PTYPE(T1, T2)>(lvec[i]) != static_cast<PTYPE(T1, T2)>(rvec[i]))
+      if (static_cast<ptype<T1, T2>>(lvec[i]) != static_cast<ptype<T1, T2>>(rvec[i]))
         return false;
     }
     return true;
@@ -125,11 +127,11 @@ namespace phm
   }
 
   template <typename T1, typename T2, unsigned D>
-  type_vec<PTYPE(T1,T2), D> operator+ (const type_vec<T1, D> &lvec, const type_vec<T2, D> &rvec)
+  type_vec<ptype<T1,T2>, D> operator+ (const type_vec<T1, D> &lvec, const type_vec<T2, D> &rvec)
   {
     type_vec<T1, D> temp;
     for (unsigned i = 0; i < D; ++i)
-      temp[i] = static_cast<PTYPE(T1, T2)>(lvec[i]) + static_cast<PTYPE(T1, T2)>(rvec[i]);
+      temp[i] = static_cast<ptype<T1, T2>>(lvec[i]) + static_cast<ptype<T1, T2>>(rvec[i]);
 
     return temp;
   }
@@ -145,7 +147,7 @@ namespace phm
   }
 
   template<typename T1, typename T2, unsigned D>
-  type_vec<PTYPE(T1, T2), D> operator- (const type_vec<T1, D> &lvec, const type_vec<T2, D> &rvec)
+  type_vec<ptype<T1, T2>, D> operator- (const type_vec<T1, D> &lvec, const type_vec<T2, D> &rvec)
   {
     return lvec + -rvec;
   }
@@ -203,17 +205,17 @@ namespace phm
   }
 
   template<typename T1, typename T2, unsigned D>
-  type_vec<PTYPE(T1,T2), D> operator* (const type_vec<T1, D> &lvec, const type_vec<T2, D> &rvec)
+  type_vec<ptype<T1,T2>, D> operator* (const type_vec<T1, D> &lvec, const type_vec<T2, D> &rvec)
   {
-    type_vec<PTYPE(T1, T2), D> temp;
+    type_vec<ptype<T1, T2>, D> temp;
     for (unsigned i = 0; i < D; ++i)
-      temp[i] = static_cast<PTYPE(T1, T2)>(lvec[i]) * static_cast<PTYPE(T1, T2)>(rvec[i]);
+      temp[i] = static_cast<ptype<T1, T2>>(lvec[i]) * static_cast<ptype<T1, T2>>(rvec[i]);
 
     return temp;
   }
 
   template<typename T1, typename T2, unsigned D>
-  type_vec<PTYPE(T1, T2), D> operator/ (const type_vec<T1, D> &lvec, const type_vec<T2, D> &rvec)
+  type_vec<ptype<T1, T2>, D> operator/ (const type_vec<T1, D> &lvec, const type_vec<T2, D> &rvec)
   {
     type_vec<T2, D> temp;
     for (unsigned i = 0; i < D; ++i)

@@ -94,12 +94,17 @@ namespace phm
 
   /*We can now turn to the usual arithmetic conversions. 
   First, we promote each type, if necessary*/
+  template <typename A, typename... args>
+  struct resolve_uac { typedef typename resolve_uac<A, resolve_uac<args...>>::type return_type; };
+  /*End condition for the recursive evaluation*/
   template <typename A, typename B>
-  struct resolve_uac : public resolve_uac2<typename promote<A>::type, typename promote<B>::type> {};
+  struct resolve_uac<A, B> : public resolve_uac2<typename promote<A>::type, typename promote<B>::type> {};
 
   
 
   /*Choose the type that has higher precision. The typename keyword
   is required to tell the compiler that the following term is a type*/
-  #define PTYPE(A, B) typename resolve_uac<A, B>::return_type
+  template <typename A, typename... args>
+  using ptype = typename resolve_uac<A, args...>::return_type;
+
 }

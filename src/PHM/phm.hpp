@@ -13,10 +13,10 @@
 #include <cstdlib>
 #include <limits>
 
-#include "type_vec2.hpp"
-#include "type_vec3.hpp"
-#include "type_vec4.hpp"
-#include "type_mat.hpp"
+#include "Vector/type_vec2.hpp"
+#include "Vector/type_vec3.hpp"
+#include "Vector/type_vec4.hpp"
+#include "Vector/type_mat.hpp"
 
 namespace phm
 {
@@ -68,8 +68,6 @@ namespace phm
 *      mat4      identity    ()
 */
   /*************************************************************/
-
-  vec3 cross(const vec3 &v1, const vec3 &v2);
 
   mat4 lookat(const vec3 &eye, const vec3 &centre, const vec3 &up);
   mat4 perspective(float fov, float aspect, float near_plane, float far_plane);
