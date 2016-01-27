@@ -15,6 +15,10 @@
 
 namespace phm
 {
+  template<unsigned m, unsigned n>
+  using Min = typename std::conditional < m >= n, std::integral_constant<unsigned, n>,
+    std::integral_constant<unsigned, m >> ::type;
+
   /*****************************************************************
   *        vec2
   *        - ctor(float*)
@@ -29,6 +33,7 @@ namespace phm
   template<class T, unsigned D>
   class type_vec
   {
+    static_assert(D > 0, "Vectors of size 0 are not allowed. (And make no sense)");
   public:
 
     /*************************************
@@ -55,25 +60,31 @@ namespace phm
         v[i] = static_cast<T>(init[i]);
     }
 
-    template<typename ... T2>
-    type_vec(T2 ... init)
+    template<typename T1, typename ... T2, 
+      typename = typename std::enable_if<sizeof...(T2) != 0>::type> /*sfinae single argument ctors to avoid conflicts*/
+    type_vec(T1 init0, T2 ... init)
     {
-      T2 temp[] = { init ... };
-      for (unsigned i = 0; i < D; ++i)
+      static_assert(1 + sizeof...(T2) >= D, "Too few arguments. Cannot pass less arguments than the size of the vector.");
+      static_assert(1 + sizeof...(T2) <= D, "Too many arguments. Cannot pass more arguments than the size of the vector.");
+
+      T2 temp[] = { init0, init ... };
+      const unsigned numParams = sizeof...(T2) + 1;
+      for (unsigned i = 0; i < numParams; ++i)
         v[i] = static_cast<T>(temp[i]);
     }
 
     template<typename T2, unsigned D2, typename ... T3>
-    type_vec(const type_vec<T2, D2> &vec, T3 ... rest)
+    explicit type_vec(const type_vec<T2, D2> &vec, T3 ... rest)
     {
-      unsigned from_v = std::min(D, D2);
+      static_assert(sizeof...(T3) == 0 || (D2 + sizeof...(T3)) >= D, "Too few arguments. Cannot pass less arguments than the size of the vector.");
+      static_assert(sizeof...(T3) == 0 || (D2 + sizeof...(T3)) <= D, "Too many arguments. Cannot pass more arguments than the size of the vector.");
 
-      for (unsigned i = 0; i < from_v; ++i)
-        v[i] = vec[i];
+      for (unsigned i = 0; i < D2; ++i)
+        v[i] = static_cast<T>(vec[i]);
 
-      T2 temp[] = { rest ... };
-      for (unsigned i = from_v; i < D; ++i)
-        v[i] = static_cast<T>(temp[i - from_v]);
+      T2 temp[D - D2] = { rest ... };
+      for (unsigned i = 0; i < sizeof...(T3); ++i)
+        v[D2 + i] = static_cast<T>(temp[i]);
     }
 #pragma endregion CTORS
 

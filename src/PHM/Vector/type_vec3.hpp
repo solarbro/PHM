@@ -31,6 +31,7 @@ namespace phm
     /*************************************
     *              SWIZZLE               *
     *************************************/
+#pragma region SWIZZLE_XYZW
     T&                      x()       { return XY.x(); }
     const T&                x() const { return XY.x(); }
     T&                      y()       { return XY.y(); }
@@ -75,7 +76,8 @@ namespace phm
     type_vec<T,3>         zzx() const { return type_vec<T,3>(zz(), x()); }
     type_vec<T,3>         zzy() const { return type_vec<T,3>(zz(), y()); }
     type_vec<T,3>         zzz() const { return type_vec<T,3>(Z); }
-
+#pragma endregion SWIZZLE_XYZW
+#pragma region SWIZZLE_RGBA
     T&                      r()       { return x(); }
     const T&                r() const { return x(); }
     T&                      g()       { return y(); }
@@ -120,6 +122,7 @@ namespace phm
     type_vec<T,2>         bbr() const { return zzx(); }
     type_vec<T,2>         bbg() const { return zzy(); }
     type_vec<T,2>         bbb() const { return zzz(); }
+#pragma endregion SWIZZLE_RGBA
 
     /*************************************
     *               CTORS                *
@@ -177,19 +180,20 @@ namespace phm
   };
 
 
-  typedef type_vec<bool, 3> bvec3;
-  typedef type_vec<short, 3> svec3;
+  typedef type_vec<bool, 3>           bvec3;
+  typedef type_vec<short, 3>          svec3;
   typedef type_vec<unsigned short, 3> usvec3;
-  typedef type_vec<int, 3> ivec3;
-  typedef type_vec<unsigned int, 3> uivec3;
-  typedef type_vec<float, 3> vec3;
-  typedef type_vec<double, 3> dvec3;
+  typedef type_vec<int, 3>            ivec3;
+  typedef type_vec<unsigned int, 3>   uivec3;
+  typedef type_vec<float, 3>          vec3;
+  typedef type_vec<double, 3>         dvec3;
 
   /*      =============================================
   *                       Functions
   *       =============================================
   *
   *       cross(v1, v2)
+  *       rotateVector(vec, axis, angle)
   */
 
   template<typename T1, typename T2>
@@ -202,4 +206,14 @@ namespace phm
       );
   }
 
+  template<typename T1, typename T2, typename T3>
+  type_vec<ptype<T1, T2>, 3> rotateVector(const type_vec<T1, 3> &v, const type_vec<T2, 3> &axis, T3 angle)
+  {
+    type_vec<T2, 3> n = normalize(axis);
+    T3 cs = cos(angle);
+    T3 sn = sin(angle);
+    type_vec<ptype<T1, T2, T3>, 3> res = v * cs + cross(n, v) * sn + dot(n, v) * (1.0 - cs) * n;
+    return res;
+  }
+  
 }

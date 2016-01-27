@@ -24,6 +24,10 @@ namespace phm
   };
 
 #pragma region TEMPLATEHELPERS
+
+  template<typename T, unsigned R, unsigned C, Major major>
+  using base_mat_type = std::conditional_t<major == Major::ROW, type_vec<T, C>[R], type_vec<T, R>[C]>;
+
   template <Major Ma, Major Mb, typename T = void>
   using MatchType = typename std::enable_if<Ma == Mb, T>::type;
 
@@ -40,20 +44,6 @@ namespace phm
     std::integral_constant<unsigned, C>,
     std::integral_constant<unsigned, R >> ::type{};
 #pragma endregion TEMPLATEHELPERS
-
-  /*************************************      
-  *        type_mat
-  *        - ctor(float)
-  *        - ctor(float*)
-  *        - ctor(vec2, vec2)
-  *        - operator[]
-  *        - operator *(vec2)
-  *        - operator *(mat2)
-  *        - transpose()
-  **************************************/
-
-  //template<typename T>
-  //T det(const T> &m);
 
 
   template<class T, unsigned R, unsigned C, Major major = Major::COL>
@@ -183,12 +173,11 @@ namespace phm
 #pragma endregion STATICS
 
   private:
-
-    using base_mat_type = std::conditional_t<major == Major::ROW, type_vec<T, C>[R], type_vec<T, R>[C]>;
-
-    base_mat_type col;
+    base_mat_type<T, R, C, major> col;
   };
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
   /*******************************
              Operators
   *******************************/
@@ -555,7 +544,21 @@ namespace phm
   typedef type_mat<double, 4, 3, Major::ROW> Rdmat43;
   typedef type_mat<double, 4, 4, Major::ROW> Rdmat4;
 #pragma endregion ROWTYPES
+#pragma region GENERICTYPES
+  //type T
+  template<typename T, Major m> using tmat2  = type_mat<T, 2, 2, m>;
+  template<typename T, Major m> using tmat23 = type_mat<T, 2, 3, m>;
+  template<typename T, Major m> using tmat24 = type_mat<T, 2, 4, m>;
+  template<typename T, Major m> using tmat32 = type_mat<T, 3, 2, m>;
+  template<typename T, Major m> using tmat3  = type_mat<T, 3, 3, m>;
+  template<typename T, Major m> using tmat34 = type_mat<T, 3, 4, m>;
+  template<typename T, Major m> using tmat42 = type_mat<T, 4, 2, m>;
+  template<typename T, Major m> using tmat43 = type_mat<T, 4, 3, m>;
+  template<typename T, Major m> using tmat4  = type_mat<T, 4, 4, m>;
+#pragma endregion GENERIC_TYPES
 #pragma endregion TYPEDEFS
+
+
   /*      =============================================
   *                       Functions
   *       =============================================
@@ -566,6 +569,7 @@ namespace phm
   *       inverse
   *       operator<<
   */
+#pragma region TYPE_MAT_FUNCS
 
   template<typename T, unsigned R, unsigned C, Major maj>
   type_mat<T, C, R, maj> transpose(const type_mat<T, R, C, maj> &m)
@@ -684,4 +688,5 @@ namespace phm
 
     return os;
   }
+#pragma endregion TYPE_MAT_FUNCS
 }

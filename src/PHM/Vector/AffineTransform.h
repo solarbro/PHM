@@ -32,15 +32,15 @@ namespace phm
   *      mat4      translate      (vec3);
   */
   /*************************************************************/
-  template<typename T1, typename T2, typename T3>
-  type_mat<ptype<T1, T2, T3>, 4, 4> lookat(const type_vec<T1, 3> &eye, const type_vec<T2, 3> &centre, const type_vec<T3, 3> &up)
+  template<typename T1, typename T2, typename T3, Major major = Major::COL>
+  tmat4<ptype<T1, T2, T3>, major> lookat(const type_vec<T1, 3> &eye, const type_vec<T2, 3> &centre, const type_vec<T3, 3> &up)
   {
     type_vec<ptype<T1, T2, T3>, 3> f = normalize(centre - eye);
     type_vec<ptype<T1, T2, T3>, 3> u = normalize(up);
     type_vec<ptype<T1, T2, T3>, 3> s = normalize(cross(f, u));
     u = cross(s, f);
 
-    mat4 Result;
+    tmat4<ptype<T1, T2, T3>, major> Result;
     Result[0][0] = s.x();
     Result[1][0] = s.y();
     Result[2][0] = s.z();
@@ -56,80 +56,88 @@ namespace phm
     return Result;
   }
 
-  mat4 perspective(float fovy, float aspect, float near, float far)
+  template<typename T1, typename T2, typename T3, typename T4, Major major = Major::COL>
+  tmat4<ptype<T1, T2, T3, T4>, major> perspective(T1 fovy, T2 aspect, T3 near, T4 far)
   {
-    //assert(abs(aspect - std::numeric_limits<float>::epsilon()) > static_cast<float>(0));
+    //assert(abs(aspect - std::numeric_limits<float>::epsilon()) > static_cast<ptype<T1, T2, T3, T4>>(0));
 
-    float const tanHalfFovy = tan(fovy * 0.5f);
+    ptype<T1, T2, T3> const tanHalfFovy = tan(fovy * static_cast<ptype<T1, T2, T3>>(0.5));
 
-    mat4 Result(0.f);
-    Result[0][0] = 1.f / (aspect * tanHalfFovy);
-    Result[1][1] = 1.f / (tanHalfFovy);
-    Result[2][2] = -(far + near) / (far - near);
-    Result[2][3] = -1.f;
-    Result[3][2] = -(2.f * far * near) / (far - near);
+    tmat4<ptype<T1, T2, T3, T4>, major> Result(0.f);
+    Result[0][0] = static_cast<ptype<T1, T2, T3>>(1.0) / (aspect * tanHalfFovy);
+    Result[1][1] = static_cast<ptype<T1, T2, T3>>(1.0) / (tanHalfFovy);
+    Result[2][2] = static_cast<ptype<T1, T2, T3>>(-(far + near) / (far - near));
+    Result[2][3] = static_cast<ptype<T1, T2, T3>>(-1.0);
+    Result[3][2] = static_cast<ptype<T1, T2, T3>>(-(2.f * far * near) / (far - near));
     return Result;
   }
 
-  mat4 perspectiveInf(float fovy, float aspect, float near)
+  template<typename T1, typename T2, typename T3, Major major = Major::COL>
+  tmat4<ptype<T1, T2, T3>, major> perspectiveInf(T1 fovy, T2 aspect, T3 near)
   {
-    float const tanHalfFovy = tan(fovy * 0.5f);
+    double const tanHalfFovy = tan(fovy * 0.5);
 
-    mat4 Result(0.f);
-    Result[0][0] = 1.f / (aspect * tanHalfFovy);
-    Result[1][1] = 1.f / (tanHalfFovy);
-    Result[2][2] = -1.f;
-    Result[2][3] = -1.f;
-    Result[3][2] = -(2.f * near);
+    tmat4<ptype<T1, T2, T3>, major> Result(0.0);
+    Result[0][0] = static_cast<ptype<T1, T2, T3>>(1.0 / (aspect * tanHalfFovy));
+    Result[1][1] = static_cast<ptype<T1, T2, T3>>(1.0 / (tanHalfFovy));
+    Result[2][2] = static_cast<ptype<T1, T2, T3>>(-1.0);
+    Result[2][3] = static_cast<ptype<T1, T2, T3>>(-1.0);
+    Result[3][2] = static_cast<ptype<T1, T2, T3>>(-(2.0 * near));
     return Result;
   }
 
-  mat4 ortho(float left, float right, float bottom, float top, float zNear, float zFar)
+  template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, Major major = Major::COL>
+  tmat4<ptype<T1, T2, T3, T4, T5, T6>, major> ortho(T1 left, T2 right, T3 bottom, T4 top, T5 zNear, T6 zFar)
   {
-    mat4 Result(1);
-    Result[0][0] = 2.f / (right - left);
-    Result[1][1] = 2.f / (top - bottom);
-    Result[2][2] = -2.f / (zFar - zNear);
-    Result[3][0] = -(right + left) / (right - left);
-    Result[3][1] = -(top + bottom) / (top - bottom);
-    Result[3][2] = -(zFar + zNear) / (zFar - zNear);
+    tmat4<ptype<T1, T2, T3, T4, T5, T6>, major> Result(1.0);
+    Result[0][0] = static_cast<ptype<T1, T2, T3, T4, T5, T6>>(2.0 / (right - left));
+    Result[1][1] = static_cast<ptype<T1, T2, T3, T4, T5, T6>>(2.0 / (top - bottom));
+    Result[2][2] = static_cast<ptype<T1, T2, T3, T4, T5, T6>>(-2.0 / (zFar - zNear));
+    Result[3][0] = static_cast<ptype<T1, T2, T3, T4, T5, T6>>(-(right + left) / (right - left));
+    Result[3][1] = static_cast<ptype<T1, T2, T3, T4, T5, T6>>(-(top + bottom) / (top - bottom));
+    Result[3][2] = static_cast<ptype<T1, T2, T3, T4, T5, T6>>(-(zFar + zNear) / (zFar - zNear));
     return Result;
   }
 
-  mat4 orthoInf(float left, float right, float bottom, float top)
+  template<typename T1, typename T2, typename T3, typename T4, Major major = Major::COL>
+  tmat4<ptype<T1, T2, T3, T4>, major> orthoInf(T1 left, T2 right, T3 bottom, T4 top)
   {
-    mat4 Result(1);
-    Result[0][0] = 2.f / (right - left);
-    Result[1][1] = 2.f / (top - bottom);
-    Result[2][2] = 0.f;
-    Result[3][0] = -(right + left) / (right - left);
-    Result[3][1] = -(top + bottom) / (top - bottom);
-    Result[3][2] = -1.f;
+    tmat4<ptype<T1, T2, T3, T4>, major> Result(1.0);
+    Result[0][0] = static_cast<ptype<T1, T2, T3, T4>>(2.0 / (right - left));
+    Result[1][1] = static_cast<ptype<T1, T2, T3, T4>>(2.0 / (top - bottom));
+    Result[2][2] = static_cast<ptype<T1, T2, T3, T4>>(0.0);
+    Result[3][0] = static_cast<ptype<T1, T2, T3, T4>>(-(right + left) / (right - left));
+    Result[3][1] = static_cast<ptype<T1, T2, T3, T4>>(-(top + bottom) / (top - bottom));
+    Result[3][2] = static_cast<ptype<T1, T2, T3, T4>>(-1.0);
     return Result;
   }
 
-  mat4 scale(float s)
+  template<typename T, Major major = Major::COL>
+  tmat4<T, major> scale(T s)
   {
     return scale(s, s, s);
   }
 
-  mat4 scale(float x, float y, float z)
+  template<typename T1, typename T2, typename T3, Major major = Major::COL>
+  tmat4<ptype<T1, T2, T3>, major> scale(T1 x, T2 y, T3 z)
   {
-    return scale(vec3(x, y, z));
+    return scale(type_vec<ptype<T1, T2, T3>, 3>(x, y, z));
   }
 
-  mat4 scale(const vec2 &scale_vec)
+  template<typename T, Major major = Major::COL>
+  tmat4<T, major> scale(const type_vec<T, 2> &scale_vec)
   {
-    return scale(vec3(scale_vec, 1.f));
+    return scale(type_vec<T, 3>(scale_vec, 1.0));
   }
 
-  mat4 scale(const vec3 &scale_vec)
+  template<typename T, Major major = Major::COL>
+  tmat4<T, major> scale(const type_vec<T, 3> &scale_vec)
   {
-    return mat4(
-      vec4(scale_vec.x(), 0.f, 0.f, 0.f),
-      vec4(0.f, scale_vec.y(), 0.f, 0.f),
-      vec4(0.f, 0.f, scale_vec.z(), 0.f),
-      vec4(0.f, 0.f, 0.f, 1.f));
+    return tmat4<T, major>(
+      type_vec<T, 4>(scale_vec.x(), 0.0, 0.0, 0.0),
+      type_vec<T, 4>(0.0, scale_vec.y(), 0.0, 0.0),
+      type_vec<T, 4>(0.0, 0.0, scale_vec.z(), 0.0),
+      type_vec<T, 4>(0.0, 0.0, 0.0, 1.0));
   }
 
   mat4 rotate(float angle, const vec3 &axis)
