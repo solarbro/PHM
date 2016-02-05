@@ -46,8 +46,8 @@ TEST(type_selection, double_double) { EXPECT_EQ(typeid(double).name(), typeid(pt
 #pragma region TYPE_VEC_CTORS
 
 TEST(type_vec_ctor, default_ctor1){ type_vec<short, 1> v1s; EXPECT_EQ(0, v1s[0]); }
-TEST(type_vec_ctor, default_ctor2){ type_vec<int, 2> v2i; EXPECT_EQ(0, v2i.y()); }
-TEST(type_vec_ctor, default_ctor3){ type_vec<float, 3> v3f; EXPECT_EQ(0, v3f.z()); }
+TEST(type_vec_ctor, default_ctor2){ type_vec<int, 2> v2i; EXPECT_EQ(0, v2i.y); }
+TEST(type_vec_ctor, default_ctor3){ type_vec<float, 3> v3f; EXPECT_EQ(0, v3f.z); }
 TEST(type_vec_ctor, default_ctor4){ type_vec<double, 4> v4d; EXPECT_EQ(0, v4d[3]); }
 TEST(type_vec_ctor, default_ctor150){ type_vec<unsigned, 150> v150u; EXPECT_EQ(0, v150u[67]); }
 

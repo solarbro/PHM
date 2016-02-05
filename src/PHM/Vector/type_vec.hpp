@@ -2,7 +2,6 @@
 /*!
 \filxe  type_vec2.hpp
 \author Sagnik Chowdhury
-\par    Course: GAM300
 \brief  Contains the Photon renderer math library
 */
 /******************************************************************************/
@@ -10,6 +9,7 @@
 #pragma once
 #include <algorithm>
 #include <iostream>
+#include <string.h> //memcpy
 
 #include "type_selector.h"
 
@@ -42,12 +42,12 @@ namespace phm
 #pragma region CTORS
     type_vec()
     {
-      for (unsigned i = 0; i < D; ++i)
-        v[i] = static_cast<T>(0.0);
+      T init_data[D] = { static_cast<T>(0.0) };
+      std::memcpy(v, init_data, sizeof(T) * D);
     }
 
     template<typename T2>
-    type_vec(T2 init)
+    explicit type_vec(T2 init)
     {
       for (unsigned i = 0; i < D; ++i)
         v[i] = static_cast<T>(init);

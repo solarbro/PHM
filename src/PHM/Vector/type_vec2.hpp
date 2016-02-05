@@ -9,6 +9,7 @@
 
 #pragma once
 #include "type_vec.hpp"
+#include "Swizzle/vector_base_data.hpp"
 
 namespace phm
 {
@@ -24,81 +25,71 @@ namespace phm
   *****************************************************************/
 
   template<class T>
-  class type_vec<T, 2>
+  class type_vec<T, 2> : public swizzle::vec2_internal_data<T> 
   {
   public:
-    
-    /*************************************
-    *              SWIZZLE               *
-    *************************************/
-    T&                     x()       { return X; }
-    const T&               x() const { return X; }
-    T&                     y()       { return Y; }
-    const T&               y() const { return Y; }
-    type_vec<T, 2>        xx() const { return type_vec<T, 2>(X); }
-    type_vec<T, 2>&       xy()       { return *this; }
-    const type_vec<T, 2>& xy() const { return *this; }
-    type_vec<T, 2>        yx() const { return type_vec<T, 2>(Y, X); }
-    type_vec<T, 2>        yy() const { return type_vec<T, 2>(Y); }
-
-    T&                     r()       { return X; }
-    const T&               r() const { return X; }
-    T&                     g()       { return Y; }
-    const T&               g() const { return Y; }
-    type_vec<T, 2>        rr() const { return xx(); }
-    type_vec<T, 2>&       rg()       { return xy(); }
-    const type_vec<T, 2>& rg() const { return xy(); }
-    type_vec<T, 2>        gr() const { return yx(); }
-    type_vec<T, 2>        gg() const { return yy(); }
 
     /*************************************
     *               CTORS                *
     *************************************/
-    type_vec() :
-      X(static_cast<T>(0.0)), Y(static_cast<T>(0.0)){}
+    type_vec() {}
 
     template<typename T2>
-    type_vec(T2 init) :
-      X(static_cast<T>(init)), Y(static_cast<T>(init)){}
+    explicit type_vec(T2 init) :
+      swizzle::vec2_internal_data<T>(
+      static_cast<T>(init), 
+      static_cast<T>(init)){}
 
     template<typename T2>
     type_vec(T2* init) :
-      X(static_cast<T>(init[0])), Y(static_cast<T>(init[1])){}
+      swizzle::vec2_internal_data<T>(
+      static_cast<T>(init[0]), 
+      static_cast<T>(init[1])){}
 
-    template<typename T2>
-    type_vec(const T2 &init_x, const T2 &init_y) :
-      X(static_cast<T>(init_x)), Y(static_cast<T>(init_y)){}
+    template<typename T2, typename T3>
+    type_vec(const T2 &init_x, const T3 &init_y) :
+      swizzle::vec2_internal_data<T>(
+      static_cast<T>(init_x), 
+      static_cast<T>(init_y)){}
 
     template<typename T2>
     type_vec(const type_vec<T2, 2> &v) :
-      X(static_cast<T>(v.X)), Y(static_cast<T>(v.Y)){}
+      swizzle::vec2_internal_data<T>(
+      static_cast<T>(v[0]), 
+      static_cast<T>(v[1])) {}
+
+    template<typename T2, unsigned A, unsigned B>
+    type_vec(const swizzle::Vec2Proxy<T2, A, B> &proxy) :
+      swizzle::vec2_internal_data<T>(
+      static_cast<T>(reinterpret_cast<const T2*>(&proxy)[A]), 
+      static_cast<T>(reinterpret_cast<const T2*>(&proxy)[B])) {}
 
     /*************************************
     *             OPERATORS              *
     *************************************/
-    
+    operator swizzle::conversion_proxy<T, 2>() const
+    {
+      swizzle::conversion_proxy<T, 2> proxy{x, y};
+      return proxy;
+    }
+
     template<typename T2>
     type_vec<T, 2>& operator= (const type_vec<T2, 2> &v)
     {
-      X = static_cast<T>(v.X); Y = static_cast<T>(v.Y);
+      x = static_cast<T>(v.[0]); 
+      y = static_cast<T>(v.[1]);
       return *this;
     }
 
     T operator[] (unsigned i) const
     {
-      return *(&X + i);
+      return *(&x + i);
     }
 
     T& operator[] (unsigned i)
     {
-      return *(&X + i);
+      return *(&x + i);
     }
-
-
-  private:
-
-    T X;
-    T Y;
 
   };
   
