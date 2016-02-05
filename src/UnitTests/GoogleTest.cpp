@@ -10,7 +10,7 @@ TEST(test_math, powf)     { EXPECT_FLOAT_EQ(std::pow(2.5, 3.2), phm::pow(2.5, 3.
 TEST(test_math, factorial){ EXPECT_EQ(3628800, phm::factorial(unsigned(10))); }
 TEST(test_math, exp)      { EXPECT_FLOAT_EQ(268337.2865f, phm::exp(12.5f)); }
 TEST(test_math, ln)       { EXPECT_FLOAT_EQ(1.f, std::log(75.21234f) / phm::ln(75.21234f)); }
-TEST(test_math, log)      { EXPECT_FLOAT_EQ(std::log10(12.64f), phm::log(10.f, 12.64)); }
+TEST(test_math, log)      { EXPECT_FLOAT_EQ(std::log10(12.64f), phm::log(10.f, 12.64f)); }
 TEST(test_math, cos)      { EXPECT_FLOAT_EQ(cos(0.f), phm::cos(0.f)); }
 TEST(test_math, sin)      { EXPECT_FLOAT_EQ(sin(phm::Constant<double>::half_pi), phm::sin(phm::Constant<double>::half_pi)); }
 #pragma endregion MATH_TESTS

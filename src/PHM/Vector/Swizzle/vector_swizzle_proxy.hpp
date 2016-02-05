@@ -48,7 +48,7 @@ namespace phm
         return *this;
       }
 
-      Vec2Proxy<T, A, B>& operator= (const conversion_proxy<T, 2> &conv)
+      Vec2Proxy<T, A, B>& operator= (const conversion_proxy<T> &conv)
       {
         static_assert(A != B, "Cannot write to this component.");
         T*  this_ptr = reinterpret_cast<T*>(this);
@@ -76,6 +76,16 @@ namespace phm
         this_ptr[C] = rhs_ptr[C2];
         return *this;
       }
+
+      Vec3Proxy<T, A, B, C>& operator= (const conversion_proxy<T> &conv)
+      {
+        static_assert(A != B && A != C && B != C, "Cannot write to this component.");
+        T*  this_ptr = reinterpret_cast<T*>(this);
+        this_ptr[A] = conv[0];
+        this_ptr[B] = conv[1];
+        this_ptr[C] = conv[2];
+        return *this;
+      }
     };
 
 #pragma endregion Vec3Proxy
@@ -95,6 +105,17 @@ namespace phm
         this_ptr[B] = rhs_ptr[B2];
         this_ptr[C] = rhs_ptr[C2];
         this_ptr[D] = rhs_ptr[D2];
+        return *this;
+      }
+
+      Vec4Proxy<T, A, B, C, D>& operator= (const conversion_proxy<T> &conv)
+      {
+        static_assert(A != B && A != C && A != D && B != C && B != D && C != D, "Cannot write to this component.");
+        T*  this_ptr = reinterpret_cast<T*>(this);
+        this_ptr[A] = conv[0];
+        this_ptr[B] = conv[1];
+        this_ptr[C] = conv[2];
+        this_ptr[D] = conv[3];
         return *this;
       }
     };

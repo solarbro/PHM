@@ -78,11 +78,7 @@ namespace phm
     /*************************************
     *             OPERATORS              *
     *************************************/
-    operator swizzle::conversion_proxy<T, 3>() const
-    {
-      swizzle::conversion_proxy<T, 3> proxy{ x, y, z };
-      return proxy;
-    }
+    CONVERSION_PROXY
 
     template<typename T2>
     type_vec<T, 3>& operator= (const type_vec<T2, 3> &v)

@@ -13,17 +13,25 @@ namespace phm
 {
   namespace swizzle
   {
+#define CONVERSION_PROXY                                                    \
+  operator swizzle::conversion_proxy<T>()                                   \
+  {                                                                         \
+    swizzle::conversion_proxy<T> proxy(reinterpret_cast<const T*>(this) );  \
+    return proxy;                                                           \
+  }                                                                         \
 
-    template<typename T, unsigned Size>
+    template<typename T>
     struct conversion_proxy
     {
+      conversion_proxy(const T* vec) : data(vec) {}
 
       T operator[](unsigned index) const
       {
         return data[index];
       }
 
-      T data[Size];
+    private:
+      const T* data;
     };
 
   }
