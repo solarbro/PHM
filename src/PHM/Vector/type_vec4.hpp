@@ -2,7 +2,6 @@
 /*!
 \filxe  type_vec3.hpp
 \author Sagnik Chowdhury
-\par    Course: GAM300
 \brief  Contains the Photon renderer math library
 */
 /******************************************************************************/
