@@ -12,6 +12,7 @@
 #include <string.h> //memcpy
 
 #include "type_selector.h"
+#include "Swizzle/vector_base_data.hpp"
 
 namespace phm
 {
@@ -31,9 +32,8 @@ namespace phm
   *****************************************************************/
 
   template<class T, unsigned D>
-  class type_vec
+  class type_vec : public swizzle::vec_internal_data<T, D>
   {
-    static_assert(D > 0, "Vectors of size 0 are not allowed. (And make no sense)");
   public:
 
     /*************************************
@@ -43,21 +43,21 @@ namespace phm
     type_vec()
     {
       T init_data[D] = { static_cast<T>(0.0) };
-      std::memcpy(v, init_data, sizeof(T) * D);
+      std::memcpy(store, init_data, sizeof(T) * D);
     }
 
     template<typename T2>
     explicit type_vec(T2 init)
     {
       for (unsigned i = 0; i < D; ++i)
-        v[i] = static_cast<T>(init);
+        store[i] = static_cast<T>(init);
     }
 
     template<typename T2>
     type_vec(T2* init)
     {
       for (unsigned i = 0; i < D; ++i)
-        v[i] = static_cast<T>(init[i]);
+        store[i] = static_cast<T>(init[i]);
     }
 
     template<typename T1, typename ... T2, 
@@ -67,10 +67,10 @@ namespace phm
       static_assert(1 + sizeof...(T2) >= D, "Too few arguments. Cannot pass less arguments than the size of the vector.");
       static_assert(1 + sizeof...(T2) <= D, "Too many arguments. Cannot pass more arguments than the size of the vector.");
 
-      T2 temp[] = { init0, init ... };
+      T1 temp[] = { init0, init ... };
       const unsigned numParams = sizeof...(T2) + 1;
       for (unsigned i = 0; i < numParams; ++i)
-        v[i] = static_cast<T>(temp[i]);
+        store[i] = static_cast<T>(temp[i]);
     }
 
     template<typename T2, unsigned D2, typename ... T3>
@@ -80,40 +80,47 @@ namespace phm
       static_assert(sizeof...(T3) == 0 || (D2 + sizeof...(T3)) <= D, "Too many arguments. Cannot pass more arguments than the size of the vector.");
 
       for (unsigned i = 0; i < D2; ++i)
-        v[i] = static_cast<T>(vec[i]);
+        store[i] = static_cast<T>(vec[i]);
 
       T2 temp[D - D2] = { rest ... };
       for (unsigned i = 0; i < sizeof...(T3); ++i)
-        v[D2 + i] = static_cast<T>(temp[i]);
+        store[D2 + i] = static_cast<T>(temp[i]);
+    }
+
+    template<typename T2, unsigned ... indices>
+    type_vec(const swizzle::VecProxy<T2, indices ...> &proxy)
+    {
+      static_assert(sizeof...(indices) >= D, "Insufficient data for this constructor");
+      const T2* rhs_ptr = reinterpret_cast<const T2*>(&proxy);
+      unsigned ix_array[] = { indices... };
+      for (unsigned i = 0; i < D; ++i)
+        store[i] = static_cast<T>(rhs_ptr[ix_array[i]]);
     }
 #pragma endregion CTORS
 
     /*************************************
     *             OPERATORS              *
     *************************************/
+    CONVERSION_PROXY
+
     template <typename T2>
     type_vec<T, D>& operator= (const type_vec<T2, D> &rvec)
     {
       for (unsigned i = 0; i < D; ++i)
-        v[i] = static_cast<T>(rvec[i]);
+        store[i] = static_cast<T>(rvec[i]);
 
       return *this;
     }
     
     T operator[] (unsigned i) const
     {
-      return v[i];
+      return store[i];
     }
 
     T& operator[] (unsigned i)
     {
-      return v[i];
+      return store[i];
     }
-
-  private:
-
-    T v[D];
-
   };
 
 
