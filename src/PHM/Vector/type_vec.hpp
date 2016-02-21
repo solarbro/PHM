@@ -17,8 +17,7 @@
 namespace phm
 {
   template<unsigned m, unsigned n>
-  using Min = typename std::conditional < m >= n, std::integral_constant<unsigned, n>,
-    std::integral_constant<unsigned, m >> ::type;
+  using Min = std::conditional_t < m >= n, std::integral_constant<unsigned, n>, std::integral_constant<unsigned, m >>;
 
   /*****************************************************************
   *        vec2
@@ -67,10 +66,9 @@ namespace phm
       static_assert(1 + sizeof...(T2) >= D, "Too few arguments. Cannot pass less arguments than the size of the vector.");
       static_assert(1 + sizeof...(T2) <= D, "Too many arguments. Cannot pass more arguments than the size of the vector.");
 
-      T1 temp[] = { init0, init ... };
-      const unsigned numParams = sizeof...(T2) + 1;
-      for (unsigned i = 0; i < numParams; ++i)
-        store[i] = static_cast<T>(temp[i]);
+      T temp[] = { static_cast<T>(init0), static_cast<T>(init) ... };
+
+      std::memcpy(store, temp, D * sizeof(T));
     }
 
     template<typename T2, unsigned D2, typename ... T3>
@@ -79,12 +77,15 @@ namespace phm
       static_assert(sizeof...(T3) == 0 || (D2 + sizeof...(T3)) >= D, "Too few arguments. Cannot pass less arguments than the size of the vector.");
       static_assert(sizeof...(T3) == 0 || (D2 + sizeof...(T3)) <= D, "Too many arguments. Cannot pass more arguments than the size of the vector.");
 
-      for (unsigned i = 0; i < D2; ++i)
+      for (unsigned i = 0; i < Min<D, D2>::value; ++i)
         store[i] = static_cast<T>(vec[i]);
 
-      T2 temp[D - D2] = { rest ... };
-      for (unsigned i = 0; i < sizeof...(T3); ++i)
-        store[D2 + i] = static_cast<T>(temp[i]);
+      if (D <= D2)
+        return;
+
+      std::conditional_t<D >= D2 + 1, T[D - D2], T[1]> temp = { static_cast<T>(rest) ... };
+      
+      std::memcpy(store + D2, temp, sizeof(T) * sizeof...(T3));
     }
 
     template<typename T2, unsigned ... indices>
@@ -123,6 +124,9 @@ namespace phm
     }
   };
 
+  //size 0 vectors should be constructable but not usable with anything
+  template<typename T>
+  class type_vec<T, 0> {};
 
   /*************************************
   *             OPERATORS              *

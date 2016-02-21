@@ -10,6 +10,11 @@ int main(int argc, char** argv)
   phm::vec4 aarg(1, 2, 3, 4);
   phm::vec3 blaarg(aarg.yxz);
   phm::vec2 glaarg = aarg.wx;
+
+  phm::vec4 moron(glaarg, 3, 4.f); //yay this actually errors with the wrong number of args
+  
+  phm::vec3 idiot(moron);
+
   float boat = blaarg.g - glaarg.r;
   double trouble = aarg.b;
   double bubble = 3.0;
