@@ -2,7 +2,7 @@
 /*!
 \filxe  type_vec2.hpp
 \author Sagnik Chowdhury
-\brief  Contains the Photon renderer math library
+\brief  typedefs for commonly used size 2 vectors
 */
 /******************************************************************************/
 

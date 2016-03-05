@@ -1,8 +1,8 @@
 /******************************************************************************/
 /*!
-\filxe  phm.hpp
+\filxe  Function.hpp
 \author Sagnik Chowdhury
-\brief  Contains the Photon renderer math library
+\brief  Implementations of various math functions.
 */
 /******************************************************************************/
 

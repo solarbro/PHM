@@ -1,9 +1,8 @@
 /******************************************************************************/
 /*!
-\filxe  phm.hpp
+\filxe  AffineTransform.hpp
 \author Sagnik Chowdhury
-\par    Course: GAM300
-\brief  Contains the Photon renderer math library
+\brief  Functions for constructing affine transformation matrices
 */
 /******************************************************************************/
 #pragma once
@@ -140,93 +139,123 @@ namespace phm
       type_vec<T, 4>(0.0, 0.0, 0.0, 1.0));
   }
 
-  mat4 rotate(float angle, const vec3 &axis)
+  template<typename T1, typename T2>
+  tmat4<std::common_type_t<T1, T2>, Major::COL> rotate(T1 angle, const type_vec<T2, 3> &axis)
   {
-    return mat4();
+    T1 c = std::cos(angle);
+    T1 s = std::sin(angle);
+    T1 t = 1 - c;
+    type_vec<T2, 3> n_axis = normalize(axis);
+
+    tmat4<std::common_type_t<T1, T2>, Major::COL> m;
+    m[0][0] = t * x * x + c;
+    m[0][1] = t * x * y + z * s;
+    m[0][2] = t * x * z - y * s;
+    m[1][0] = t * x * y - z * s;
+    m[1][1] = t * y * y + c;
+    m[1][2] = t * y * z + x * s;
+    m[2][0] = t * x * z + y * s;
+    m[2][1] = t * y * z - x * s;
+    m[2][2] = t * z * z + c;
+
+    return m;
   }
 
-  mat4 rotate(float angle, float axis_x, float axis_y, float axis_z)
+  template<typename T1, typename T2, typename T3, typename T4>
+  tmat4<std::common_type_t<T1, T2, T3, T4>, Major::COL> rotate(T1 angle, T2 axis_x, T3 axis_y, T4 axis_z)
   {
-    return mat4();
+    return rotate(angle, type_vec<std::common_type_t<T2, T3, T4>, 3>(axis_x, axis_y, axis_z));
   }
 
-  mat4 rotateX(float angle)
+  template<typename T, Major major = Major::COL>
+  tmat4<T, major> rotateX(T angle)
   {
-    float cosa = cosf(angle);
-    float sina = sinf(angle);
-    return mat4(
-      vec4(1.f, 0.f, 0.f, 0.f),
-      vec4(0.f, cosa, sina, 0.f),
-      vec4(0.f, -sina, cosa, 0.f),
-      vec4(0.f, 0.f, 0.f, 1.f));
+    T cosa = std::cos(angle);
+    T sina = std::sin(angle);
+    return tmat4<T, major>(
+      type_vec<T, 4>(1.f, 0.f, 0.f, 0.f),
+      type_vec<T, 4>(0.f, cosa, sina, 0.f),
+      type_vec<T, 4>(0.f, -sina, cosa, 0.f),
+      type_vec<T, 4>(0.f, 0.f, 0.f, 1.f));
   }
 
-  mat4 rotateY(float angle)
+  template<typename T, Major major = Major::COL>
+  tmat4<T, major> rotateY(T angle)
   {
-    float cosa = cosf(angle);
-    float sina = sinf(angle);
-    return mat4(
-      vec4(cosa, 0.f, -sina, 0.f),
-      vec4(0.f, 1.f, 0.f, 0.f),
-      vec4(sina, 0.f, cosa, 0.f),
-      vec4(0.f, 0.f, 0.f, 1.f));
+    T cosa = std::cos(angle);
+    T sina = std::sin(angle);
+    return tmat4<T, major>(
+      type_vec<T, 4>(cosa, 0.f, -sina, 0.f),
+      type_vec<T, 4>(0.f, 1.f, 0.f, 0.f),
+      type_vec<T, 4>(sina, 0.f, cosa, 0.f),
+      type_vec<T, 4>(0.f, 0.f, 0.f, 1.f));
   }
 
-  mat4 rotateZ(float angle)
+  template<typename T, Major major = Major::COL>
+  tmat4<T, major> rotateZ(T angle)
   {
-    float cosa = cosf(angle);
-    float sina = sinf(angle);
-    return mat4(
-      vec4(cosa, sina, 0.f, 0.f),
-      vec4(-sina, cosa, 0.f, 0.f),
-      vec4(0.f, 0.f, 1.f, 0.f),
-      vec4(0.f, 0.f, 0.f, 1.f));
+    T cosa = cosf(angle);
+    T sina = sinf(angle);
+    return tmat4<T, major>(
+      type_vec<T, 4>(cosa, sina, 0.f, 0.f),
+      type_vec<T, 4>(-sina, cosa, 0.f, 0.f),
+      type_vec<T, 4>(0.f, 0.f, 1.f, 0.f),
+      type_vec<T, 4>(0.f, 0.f, 0.f, 1.f));
   }
 
-  mat4 rotateXYZ(float x, float y, float z)
+  template<typename T1, typename T2, typename T3, Major major = Major::COL>
+  tmat4<std::common_type_t<T1, T2, T3>, major> rotateXYZ(T1 x, T2 y, T3 z)
   {
     return rotateZ(z) * rotateY(y) * rotateX(x);
   }
 
-  mat4 rotateXZY(float x, float y, float z)
+  template<typename T1, typename T2, typename T3, Major major = Major::COL>
+  tmat4<std::common_type_t<T1, T2, T3>, major> rotateXZY(T1 x, T2 y, T3 z)
   {
     return rotateY(y) * rotateZ(z) * rotateX(x);
   }
 
-  mat4 rotateYXZ(float x, float y, float z)
+  template<typename T1, typename T2, typename T3, Major major = Major::COL>
+  tmat4<std::common_type_t<T1, T2, T3>, major> rotateYXZ(T1 x, T2 y, T3 z)
   {
     return rotateZ(z) * rotateX(x) * rotateY(y);
   }
 
-  mat4 rotateYZX(float x, float y, float z)
+  template<typename T1, typename T2, typename T3, Major major = Major::COL>
+  tmat4<std::common_type_t<T1, T2, T3>, major> rotateYZX(T1 x, T2 y, T3 z)
   {
     return rotateX(x) * rotateZ(z) * rotateY(y);
   }
 
-  mat4 rotateZXY(float x, float y, float z)
+  template<typename T1, typename T2, typename T3, Major major = Major::COL>
+  tmat4<std::common_type_t<T1, T2, T3>, major> rotateZXY(T1 x, T2 y, T3 z)
   {
     return rotateY(y) * rotateX(x) * rotateZ(z);
   }
 
-  mat4 rotateZYX(float x, float y, float z)
+  template<typename T1, typename T2, typename T3, Major major = Major::COL>
+  tmat4<std::common_type_t<T1, T2, T3>, major> rotateZYX(T1 x, T2 y, T3 z)
   {
     return rotateX(x) * rotateY(y) * rotateZ(z);
   }
 
-  mat4 translate(float x, float y, float z)
+  template<typename T1, typename T2, typename T3, Major major = Major::COL>
+  tmat4<std::common_type_t<T1, T2, T3>, major> translate(T1 x, T2 y, T3 z)
   {
-    return translate(vec3(x, y, z));
+    return translate(type_vec<std::common_type_t<T1, T2, T3>, 3>(x, y, z));
   }
 
-  mat4 translate(const vec2 &d)
+  template<typename T, Major major = Major::COL>
+  tmat4<T, major> translate(const type_vec<T, 2> &d)
   {
-    return translate(vec3(d, 0.f));
+    return translate(type_vec<T, 3>(d, 0.0));
   }
 
-  mat4 translate(const vec3 &d)
+  template<typename T, Major major = Major::COL>
+  tmat4<T, major> translate(const type_vec<T, 3> &d)
   {
-    mat4 res;
-    res[3] = vec4(d, 1.f);
+    tmat4<T, major> res;
+    res[3] = vec4(d, 1.0);
     return res;
   }
 

@@ -1,9 +1,8 @@
 /******************************************************************************/
 /*!
-\filxe  type_vec3.hpp
+\filxe  type_mat.hpp
 \author Sagnik Chowdhury
-\par    Course: GAM300
-\brief  Contains the Photon renderer math library
+\brief  Template matrix class
 */
 /******************************************************************************/
 
@@ -12,7 +11,6 @@
 #include <iomanip>
 #include <type_traits>
 #include "type_vec.hpp"
-#include "type_vec4.hpp"
 
 namespace phm
 {
@@ -24,21 +22,21 @@ namespace phm
   };
 
 #pragma region TEMPLATEHELPERS
-
+  //pick data layout format
   template<typename T, unsigned R, unsigned C, Major major>
   using base_mat_type = std::conditional_t<major == Major::ROW, type_vec<T, C>[R], type_vec<T, R>[C]>;
-
+  //enable this function for matching majors
   template <Major Ma, Major Mb, typename T = void>
   using MatchType = typename std::enable_if<Ma == Mb, T>::type;
-
+  //enable this function for mismatching majors
   template <Major Ma, Major Mb, typename T = void>
   using MismatchType = typename std::enable_if<Ma != Mb, T>::type;
-
+  //major dimension of the matrix
   template <unsigned R, unsigned C, Major maj>
   struct MajorDim : std::conditional<maj == Major::ROW, 
     std::integral_constant<unsigned, R>, 
     std::integral_constant<unsigned, C >> ::type{};
-
+  //minor dimension of the matrix
   template <unsigned R, unsigned C, Major maj>
   struct MinorDim : std::conditional<maj == Major::ROW,
     std::integral_constant<unsigned, C>,

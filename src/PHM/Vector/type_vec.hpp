@@ -1,8 +1,8 @@
 /******************************************************************************/
 /*!
-\filxe  type_vec2.hpp
+\filxe  type_vec.hpp
 \author Sagnik Chowdhury
-\brief  Contains the Photon renderer math library
+\brief  Template vector class
 */
 /******************************************************************************/
 
@@ -16,6 +16,7 @@
 
 namespace phm
 {
+  //compile time min function
   template<unsigned m, unsigned n>
   using Min = std::conditional_t < m >= n, std::integral_constant<unsigned, n>, std::integral_constant<unsigned, m >>;
 

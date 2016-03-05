@@ -2,7 +2,7 @@
 /*!
 \filxe  type_vec1.hpp
 \author Sagnik Chowdhury
-\brief  Contains the Photon renderer math library
+\brief  Specialization of size 1 vectors to enable special behavior
 */
 /******************************************************************************/
 

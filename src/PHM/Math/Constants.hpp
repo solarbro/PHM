@@ -2,7 +2,7 @@
 /*!
 \filxe  Constants.hpp
 \author Sagnik Chowdhury
-\brief  Math constants
+\brief  Interface for getting various commonly used math constants 
 */
 /******************************************************************************/
 #include <limits>

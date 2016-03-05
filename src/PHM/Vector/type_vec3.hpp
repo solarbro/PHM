@@ -2,7 +2,7 @@
 /*!
 \filxe  type_vec3.hpp
 \author Sagnik Chowdhury
-\brief  Contains the Photon renderer math library
+\brief  typedefs for common size 3 vector types, as well as vec3 specific operations
 */
 /******************************************************************************/
 

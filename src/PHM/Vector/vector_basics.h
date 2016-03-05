@@ -2,7 +2,8 @@
 /*!
 \filxe  vector_basics.h
 \author Sagnik Chowdhury
-\brief  Contains the Photon renderer math library
+\brief  Contains everything needed for the functionality provided by the vector
+        math section
 */
 /******************************************************************************/
 #pragma once

@@ -2,7 +2,8 @@
 /*!
 \filxe  vector_swizzle_proxy.hpp
 \author Sagnik Chowdhury
-\brief  Contains the Photon renderer math library
+\brief  Contains the Photon renderer math library. TODO: overload all operators 
+        for the proxies.
 */
 /******************************************************************************/
 #pragma once
@@ -13,7 +14,7 @@ namespace phm
   {
 
 #pragma region VEC_GENERIC_PROXY
-
+    //This is a forward declaration as there'll be specializations for every usable type
     template<typename T, unsigned ... indices>
     struct VecProxy;
 

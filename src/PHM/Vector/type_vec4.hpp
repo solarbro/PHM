@@ -1,8 +1,8 @@
 /******************************************************************************/
 /*!
-\filxe  type_vec3.hpp
+\filxe  type_vec4.hpp
 \author Sagnik Chowdhury
-\brief  Contains the Photon renderer math library
+\brief  typedefs for common size 4 vectors
 */
 /******************************************************************************/
 

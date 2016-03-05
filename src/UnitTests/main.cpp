@@ -1,3 +1,7 @@
+//This is a sandbox for doing quick tests. 
+//RUN_ALL_TESTS runs the unit tests defined in GoogleTest.cpp. 
+//I'm still in the process of writing unit tests.
+
 #include <gtest/gtest.h>
 #include <array>
 
@@ -13,9 +17,9 @@ int main(int argc, char** argv)
   phm::vec3 blaarg(aarg.yxz);
   phm::vec2 glaarg = aarg.wx;
 
-  phm::vec4 moron(glaarg, 3, 4.f); //yay this actually errors with the wrong number of args
+  phm::vec4 wrong_args(glaarg, 3, 4.f); //yay this actually errors with the wrong number of args
   
-  phm::vec3 idiot(moron);
+  phm::vec3 idiot(wrong_args);
   std::array<float, 3> arrayTest = {1, 2, 3};
   phm::vec3 assign = phm::vec3(arrayTest);
   float boat = blaarg.g - glaarg.r;
