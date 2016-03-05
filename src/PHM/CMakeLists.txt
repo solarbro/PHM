@@ -129,6 +129,8 @@ ENDIF(MAKE_EXECUTABLE STREQUAL TRUE)
 #Putting this executable project in a folder
 SET_TARGET_PROPERTIES (${ProjectName} PROPERTIES
     FOLDER Libraries/Static)
+	
+SET_TARGET_PROPERTIES(${ProjectName} PROPERTIES LINKER_LANGUAGE C++)
 #######################FINDING LIBS CUSTOM###################################
 #######################FINDING LIBS CUSTOM###################################
 

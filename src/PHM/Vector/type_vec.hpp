@@ -8,7 +8,7 @@
 
 #pragma once
 #include <algorithm>
-#include <iostream>
+#include <iostream> //operator<<
 #include <string.h> //memcpy
 
 #include "type_selector.h"
@@ -45,15 +45,14 @@ namespace phm
       std::memcpy(store, init_data, sizeof(T) * D);
     }
 
-    template<typename T2>
-    explicit type_vec(T2 init)
+    explicit type_vec(T init)
     {
       for (unsigned i = 0; i < D; ++i)
-        store[i] = static_cast<T>(init);
+        store[i] = init;
     }
 
-    template<typename T2>
-    type_vec(T2* init)
+    template<typename ArrayType, typename = std::enable_if_t<!std::is_fundamental<ArrayType>::value>>
+    explicit type_vec(const ArrayType &init)
     {
       for (unsigned i = 0; i < D; ++i)
         store[i] = static_cast<T>(init[i]);
@@ -91,7 +90,7 @@ namespace phm
     template<typename T2, unsigned ... indices>
     type_vec(const swizzle::VecProxy<T2, indices ...> &proxy)
     {
-      static_assert(sizeof...(indices) >= D, "Insufficient data for this constructor");
+      static_assert(sizeof...(indices) >= D, "Illegal construction parameter. Insufficient data provided.");
       const T2* rhs_ptr = reinterpret_cast<const T2*>(&proxy);
       unsigned ix_array[] = { indices... };
       for (unsigned i = 0; i < D; ++i)
@@ -102,13 +101,25 @@ namespace phm
     /*************************************
     *             OPERATORS              *
     *************************************/
-    CONVERSION_PROXY
 
     template <typename T2>
     type_vec<T, D>& operator= (const type_vec<T2, D> &rvec)
     {
       for (unsigned i = 0; i < D; ++i)
         store[i] = static_cast<T>(rvec[i]);
+
+      return *this;
+    }
+
+    template<typename T2, unsigned ... indices>
+    type_vec<T, D>& operator= (const swizzle::VecProxy<T2, indices ...> &proxy)
+    {
+      static_assert(sizeof...(indices) >= D, "Illegal assignment. Insufficient data in input array.");
+      static_assert(sizeof...(indices) <= D, "Illegal assignment. Cannot assign to a smaller vector.");
+      const T2* rhs_ptr = reinterpret_cast<const T2*>(&proxy);
+      unsigned ix_array[] = { indices... };
+      for (unsigned i = 0; i < D; ++i)
+        store[i] = static_cast<T>(rhs_ptr[ix_array[i]]);
 
       return *this;
     }

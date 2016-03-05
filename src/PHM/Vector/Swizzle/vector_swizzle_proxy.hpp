@@ -6,7 +6,6 @@
 */
 /******************************************************************************/
 #pragma once
-#include "vector_conversion_proxy.hpp"
 
 namespace phm
 {
@@ -44,10 +43,11 @@ namespace phm
         return *this;
       }
 
-      VecProxy<T, A>& operator= (const conversion_proxy<T> &conv)
+      template<typename T2, template <typename, unsigned> class ArrayType>
+      VecProxy<T, A>& operator= (const ArrayType<T2, 1> &conv)
       {
         T*  this_ptr = reinterpret_cast<T*>(this);
-        this_ptr[A] = conv[0];
+        this_ptr[A] = static_cast<T>(conv[0]);
         return *this;
       }
 
@@ -71,12 +71,13 @@ namespace phm
         return *this;
       }
 
-      VecProxy<T, A, B>& operator= (const conversion_proxy<T> &conv)
+      template<typename T2, template <typename, unsigned> class ArrayType>
+      VecProxy<T, A, B>& operator= (const ArrayType<T2, 2> &conv)
       {
         static_assert(A != B, "Cannot write to this component.");
         T*  this_ptr = reinterpret_cast<T*>(this);
-        this_ptr[A] = conv[0];
-        this_ptr[B] = conv[1];
+        this_ptr[A] = static_cast<T>(conv[0]);
+        this_ptr[B] = static_cast<T>(conv[1]);
         return *this;
       }
     };
@@ -100,13 +101,14 @@ namespace phm
         return *this;
       }
 
-      VecProxy<T, A, B, C>& operator= (const conversion_proxy<T> &conv)
+      template<typename T2, template <typename, unsigned> class ArrayType>
+      VecProxy<T, A, B, C>& operator= (const ArrayType<T2, 3> &conv)
       {
         static_assert(A != B && A != C && B != C, "Cannot write to this component.");
         T*  this_ptr = reinterpret_cast<T*>(this);
-        this_ptr[A] = conv[0];
-        this_ptr[B] = conv[1];
-        this_ptr[C] = conv[2];
+        this_ptr[A] = static_cast<T2>(conv[0]);
+        this_ptr[B] = static_cast<T2>(conv[1]);
+        this_ptr[C] = static_cast<T2>(conv[2]);
         return *this;
       }
     };
@@ -131,14 +133,15 @@ namespace phm
         return *this;
       }
 
-      VecProxy<T, A, B, C, D>& operator= (const conversion_proxy<T> &conv)
+      template<typename T2, template <typename, unsigned> class ArrayType>
+      VecProxy<T, A, B, C, D>& operator= (const ArrayType<T2, 4> &conv)
       {
         static_assert(A != B && A != C && A != D && B != C && B != D && C != D, "Cannot write to this component.");
         T*  this_ptr = reinterpret_cast<T*>(this);
-        this_ptr[A] = conv[0];
-        this_ptr[B] = conv[1];
-        this_ptr[C] = conv[2];
-        this_ptr[D] = conv[3];
+        this_ptr[A] = static_cast<T2>(conv[0]);
+        this_ptr[B] = static_cast<T2>(conv[1]);
+        this_ptr[C] = static_cast<T2>(conv[2]);
+        this_ptr[D] = static_cast<T2>(conv[3]);
         return *this;
       }
     };

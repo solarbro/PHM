@@ -42,8 +42,6 @@ namespace phm
 
 #pragma region OPERATORS
 
-    CONVERSION_PROXY
-
     template<typename T2>
     type_vec<T, 1>& operator= (const type_vec<T2, 1> &rvec)
     {
