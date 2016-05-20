@@ -322,14 +322,15 @@ namespace phm
   *       =============================================
   *
   *       dot(v1, v2)
-  *       sqlength(v)
-  *       length(v)
+  *       normSq(v)
+  *       norm(v)
   *       normalize(v)
   *       project(v, axis)
   *       abs(v)
   *       min(u, v)
   *       max(u, v)
   *       operator<<
+  *       similar(u, v, epsilon)
   */
 
   template<typename T, unsigned D>
@@ -342,7 +343,7 @@ namespace phm
   }
 
   template<typename T, unsigned D>
-  T sqlength(const type_vec<T, D> v)
+  T normSq(const type_vec<T, D> v)
   {
     T sl = static_cast<T>(0.0);
 
@@ -353,16 +354,16 @@ namespace phm
   }
 
   template<typename T, unsigned D>
-  T length(const type_vec<T, D> v)
+  T norm(const type_vec<T, D> v)
   {
-    T sl = sqlength(v);
+    T sl = normSq(v);
     return sqrt(sl);
   }
 
   template <typename T, unsigned D>
   type_vec<T,D> normalize(const type_vec<T, D> v)
   {
-    T len = length(v);
+    T len = norm(v);
     return v / len;
   }
 
@@ -409,5 +410,13 @@ namespace phm
 
     os << v[D - 1] << ">";
     return os;
+  }
+
+  template<typename T1, typename T2, typename T3, unsigned D>
+  bool similar(const type_vec<T1, D> &v1, const type_vec<T2, D> &v2, const T3 &eps = std::numeric_limits<T3>::epsilon())
+  {
+    for (unsigned i = 0; i < D; ++i)
+      if (std::abs(v1[i] - v2[i]) > static_cast<ptype<T1, T2>(eps))
+        return false;
   }
 }
