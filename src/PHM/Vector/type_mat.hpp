@@ -12,6 +12,10 @@
 #include <type_traits>
 #include "type_vec.hpp"
 
+//These macros conflict with my function namespace
+#undef minor
+//////////////////////////////////////////////////
+
 namespace phm
 {
 
@@ -33,8 +37,8 @@ namespace phm
   using MismatchType = typename std::enable_if<Ma != Mb, T>::type;
   //major dimension of the matrix
   template <unsigned R, unsigned C, Major maj>
-  struct MajorDim : std::conditional<maj == Major::ROW, 
-    std::integral_constant<unsigned, R>, 
+  struct MajorDim : std::conditional<maj == Major::ROW,
+    std::integral_constant<unsigned, R>,
     std::integral_constant<unsigned, C >> ::type{};
   //minor dimension of the matrix
   template <unsigned R, unsigned C, Major maj>
@@ -78,7 +82,7 @@ namespace phm
     }
 
     template<typename T1, typename ... T2>
-    type_mat(const type_vec<T1, MinorDim<R, C, major>::value> &init0, 
+    type_mat(const type_vec<T1, MinorDim<R, C, major>::value> &init0,
       const type_vec<T2, MinorDim<R, C, major>::value>& ... init)
     {
       //Initialize diagonals to 0
@@ -87,19 +91,19 @@ namespace phm
         col[i][i] = static_cast<T>(1.0);
 
       type_vec<T, R> temp[] = { init0, init ... };
-      const unsigned paramSize = std::min(static_cast<unsigned>(sizeof...(T2)), 
+      const unsigned paramSize = std::min(static_cast<unsigned>(sizeof...(T2)),
                                           static_cast<unsigned>(MajorDim<R, C, major>::value));
       for (unsigned i = 0; i < paramSize; ++i)
         col[i] = temp[i];
     }
 
-    template<typename T2, unsigned R2, unsigned C2, Major maj2, 
-      typename = typename std::enable_if<major == maj2>::type>  
+    template<typename T2, unsigned R2, unsigned C2, Major maj2,
+      typename = typename std::enable_if<major == maj2>::type>
       /*sfinae this ctor for matching majors*/
     type_mat(const type_mat<T2, R2, C2, maj2> &m)
     {
-      unsigned r = std::min(mDimension, m.mDimension);
-      unsigned c = std::min(MDimension, m.MDimension);
+      unsigned r = std::min(MinDimension, m.MinDimension);
+      unsigned c = std::min(MajDimension, m.MajDimension);
 
       //Initialize to identity matrix
       unsigned diagonal = std::min(C, R);
@@ -115,8 +119,8 @@ namespace phm
       /*sfinae this ctor for mismatching majors*/
     explicit type_mat(const typename std::enable_if<major != maj2, type_mat<T2, R2, C2, maj2>>::type &m)
     {
-      unsigned r = std::min(mDimension, m.MDimension);
-      unsigned c = std::min(MDimension, m.mDimension);
+      unsigned r = std::min(MinDimension, m.MajDimension);
+      unsigned c = std::min(MajDimension, m.MinDimension);
 
       //Initialize to identity matrix
       unsigned diagonal = std::min(C, R);
@@ -166,8 +170,8 @@ namespace phm
 #pragma endregion M_OPERATORS
 
 #pragma region STATICS
-    static const unsigned MDimension = MajorDim<R, C, major>::value;
-    static const unsigned mDimension = MinorDim<R, C, major>::value;
+    static const unsigned MajDimension = MajorDim<R, C, major>::value;
+    static const unsigned MinDimension = MinorDim<R, C, major>::value;
 #pragma endregion STATICS
 
   private:
@@ -208,9 +212,9 @@ namespace phm
 
 #pragma region OPERATOR!=
   template<typename T1, typename T2, unsigned R, unsigned C, Major maj1, Major maj2>
-  bool operator!= (const type_mat<T1, R, C, maj1> &m1, const type_mat<T2, R, C, maj2> &m)
+  bool operator!= (const type_mat<T1, R, C, maj1> &m1, const type_mat<T2, R, C, maj2> &m2)
   {
-    return !(*this == m);
+    return !(m1 == m2);
   }
 
 #pragma endregion OPERATOR!=
@@ -223,7 +227,7 @@ namespace phm
   type_mat<T1, R, C, maj> operator*(const type_mat<T1, R, C, maj> &m, const T2 &f)
   {
     type_mat<T1, R, C, maj> temp;
-    for (unsigned i = 0; i < m.MDimension; ++i)
+    for (unsigned i = 0; i < m.MajDimension; ++i)
       temp[i] = m[i] * f;
 
     return temp;
@@ -289,7 +293,7 @@ namespace phm
 
     return temp;
 
-    
+
   }
 
   //Multiply by vector for row major
@@ -349,7 +353,7 @@ namespace phm
 
       for (unsigned r = 0; r < R; ++r)
       {
-        type_vec<ptype<T1, T2>, C> row = m1[r];
+        type_vec<ptype<T1, T2>, C1> row = m1[r];
         temp[r][c] = dot(row, column);
       }
     }
@@ -365,7 +369,7 @@ namespace phm
   template<typename T1, typename T2, unsigned R, unsigned C, Major maj>
   type_mat<T1, R, C, maj>& operator*= (type_mat<T1, R, C, maj> &m, const T2 &f)
   {
-    for (unsigned i = 0; i < m.MDimension; ++i)
+    for (unsigned i = 0; i < m.MajDimension; ++i)
       m[i] *= f;
 
     return m;
@@ -391,7 +395,7 @@ namespace phm
   type_mat<T1, R, C, maj> operator+(const type_mat<T1, R, C, maj> &m, const T2 &s)
   {
     type_mat<T1, R, C, maj> temp;
-    for (unsigned i = 0; i < m.MDimension; ++i)
+    for (unsigned i = 0; i < m.MajDimension; ++i)
       temp[i] = m[i] + s;
 
     return temp;
@@ -403,7 +407,7 @@ namespace phm
   type_mat<ptype<T1, T2>, R, C, maj> operator+(const type_mat<T1, R, C, maj> &m1, const type_mat<T2, R, C, maj> &m2)
   {
     type_mat<ptype<T1, T2>, R, C, maj> temp;
-    for (unsigned i = 0; i < m1.MDimension; ++i)
+    for (unsigned i = 0; i < m1.MajDimension; ++i)
       temp[i] = m1[i] + m2[i];
 
     return temp;
@@ -418,7 +422,7 @@ namespace phm
   template<typename T1, typename T2, unsigned R, unsigned C, Major maj>
   type_mat<T1, R, C, maj>& operator+=(type_mat<T1, R, C, maj> &m, const T2 &s)
   {
-    for (unsigned i = 0; i < m.MDimension; ++i)
+    for (unsigned i = 0; i < m.MajDimension; ++i)
       m[i] += s;
 
     return m;
@@ -429,7 +433,7 @@ namespace phm
   template<typename T1, typename T2, unsigned R, unsigned C, Major maj>
   type_mat<ptype<T1, T2>, R, C, maj>& operator+=(type_mat<T1, R, C, maj> &m1, const type_mat<T2, R, C, maj> &m2)
   {
-    for (unsigned i = 0; i < m1.MDimension; ++i)
+    for (unsigned i = 0; i < m1.MajDimension; ++i)
       m1[i] += m2[i];
 
     return m1;
@@ -453,7 +457,7 @@ namespace phm
   type_mat<T1, R, C, maj> operator-(const type_mat<T1, R, C, maj> &m)
   {
     type_mat<T1, R, C, maj> temp;
-    for (unsigned i = 0; i < m.MDimension; ++i)
+    for (unsigned i = 0; i < m.MajDimension; ++i)
       temp[i] = -m[i];
 
     return temp;
@@ -574,9 +578,9 @@ namespace phm
   {
     type_mat<T, C, R, maj> temp;
 
-    for (unsigned i = 0; i < m.mDimension; ++i)
+    for (unsigned i = 0; i < m.MinDimension; ++i)
     {
-      for (unsigned j = 0; j < m.MDimension; ++j)
+      for (unsigned j = 0; j < m.MajDimension; ++j)
         temp[j][i] = m[i][j];
     }
 
@@ -588,9 +592,9 @@ namespace phm
   {
     type_mat<T, R - 1, C - 1, maj> temp;
 
-    for (unsigned i = 0; i < m.MDimension - 1; ++i)
+    for (unsigned i = 0; i < m.MajDimension - 1; ++i)
     {
-      for (unsigned j = 0; j < m.mDimension - 1; ++j)
+      for (unsigned j = 0; j < m.MinDimension - 1; ++j)
       {
         unsigned temp_c = i >= column ? i + 1 : i;
         unsigned temp_r = j >= row ? j + 1 : j;
@@ -640,7 +644,7 @@ namespace phm
       }
     }
     T determinant = det(m);
-    
+
     return adjugate / determinant;
   }
 
