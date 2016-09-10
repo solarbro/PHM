@@ -9,7 +9,7 @@
 #pragma once
 #include <algorithm>
 #include <iostream> //operator<<
-#include <string.h> //memcpy
+#include <cstring> //memcpy
 
 #include "type_selector.h"
 #include "Swizzle/vector_base_data.hpp"
@@ -43,32 +43,32 @@ namespace phm
     type_vec()
     {
       T init_data[D] = { static_cast<T>(0.0) };
-      std::memcpy(store, init_data, sizeof(T) * D);
+      std::memcpy(this->store, init_data, sizeof(T) * D);
     }
 
     explicit type_vec(T init)
     {
       for (unsigned i = 0; i < D; ++i)
-        store[i] = init;
+        this->store[i] = init;
     }
 
     template<typename ArrayType, typename = std::enable_if_t<!std::is_fundamental<ArrayType>::value>>
     explicit type_vec(const ArrayType &init)
     {
       for (unsigned i = 0; i < D; ++i)
-        store[i] = static_cast<T>(init[i]);
+        this->store[i] = static_cast<T>(init[i]);
     }
 
-    template<typename T1, typename ... T2, 
+    template<typename ... T2,
       typename = typename std::enable_if<sizeof...(T2) != 0>::type> /*sfinae single argument ctors to avoid conflicts*/
-    type_vec(T1 init0, T2 ... init)
+    explicit type_vec(T init0, T2 ... init)
     {
       static_assert(1 + sizeof...(T2) >= D, "Too few arguments. Cannot pass less arguments than the size of the vector.");
       static_assert(1 + sizeof...(T2) <= D, "Too many arguments. Cannot pass more arguments than the size of the vector.");
 
       T temp[] = { static_cast<T>(init0), static_cast<T>(init) ... };
 
-      std::memcpy(store, temp, D * sizeof(T));
+      std::memcpy(this->store, temp, D * sizeof(T));
     }
 
     template<typename T2, unsigned D2, typename ... T3>
@@ -78,14 +78,14 @@ namespace phm
       static_assert(sizeof...(T3) == 0 || (D2 + sizeof...(T3)) <= D, "Too many arguments. Cannot pass more arguments than the size of the vector.");
 
       for (unsigned i = 0; i < Min<D, D2>::value; ++i)
-        store[i] = static_cast<T>(vec[i]);
+        this->store[i] = static_cast<T>(vec[i]);
 
       if (D <= D2)
         return;
 
       std::conditional_t<D >= D2 + 1, T[D - D2], T[1]> temp = { static_cast<T>(rest) ... };
-      
-      std::memcpy(store + D2, temp, sizeof(T) * sizeof...(T3));
+
+      std::memcpy(this->store + D2, temp, sizeof(T) * sizeof...(T3));
     }
 
     template<typename T2, unsigned ... indices>
@@ -95,7 +95,7 @@ namespace phm
       const T2* rhs_ptr = reinterpret_cast<const T2*>(&proxy);
       unsigned ix_array[] = { indices... };
       for (unsigned i = 0; i < D; ++i)
-        store[i] = static_cast<T>(rhs_ptr[ix_array[i]]);
+        this->store[i] = static_cast<T>(rhs_ptr[ix_array[i]]);
     }
 #pragma endregion CTORS
 
@@ -107,7 +107,7 @@ namespace phm
     type_vec<T, D>& operator= (const type_vec<T2, D> &rvec)
     {
       for (unsigned i = 0; i < D; ++i)
-        store[i] = static_cast<T>(rvec[i]);
+        this->store[i] = static_cast<T>(rvec[i]);
 
       return *this;
     }
@@ -120,19 +120,19 @@ namespace phm
       const T2* rhs_ptr = reinterpret_cast<const T2*>(&proxy);
       unsigned ix_array[] = { indices... };
       for (unsigned i = 0; i < D; ++i)
-        store[i] = static_cast<T>(rhs_ptr[ix_array[i]]);
+        this->store[i] = static_cast<T>(rhs_ptr[ix_array[i]]);
 
       return *this;
     }
-    
+
     T operator[] (unsigned i) const
     {
-      return store[i];
+      return this->store[i];
     }
 
     T& operator[] (unsigned i)
     {
-      return store[i];
+      return this->store[i];
     }
   };
 
@@ -416,7 +416,7 @@ namespace phm
   bool similar(const type_vec<T1, D> &v1, const type_vec<T2, D> &v2, const T3 &eps = std::numeric_limits<T3>::epsilon())
   {
     for (unsigned i = 0; i < D; ++i)
-      if (std::abs(v1[i] - v2[i]) > static_cast<ptype<T1, T2>(eps))
+      if (std::abs(v1[i] - v2[i]) > static_cast<ptype<T1, T2>>(eps))
         return false;
   }
 }

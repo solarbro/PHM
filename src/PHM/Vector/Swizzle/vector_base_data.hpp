@@ -38,7 +38,7 @@ namespace phm
       union
       {
 #pragma region vec1_swizzle
-        T store[1];
+        T store;
         Swizzle<T, 0> x;
         Swizzle<T, 0, 0> xx;
         Swizzle<T, 0, 0, 0> xxx;

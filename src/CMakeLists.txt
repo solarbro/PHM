@@ -37,7 +37,7 @@ IF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     MESSAGE( "64 bits compiler detected" )
     SET( EX_PLATFORM 64 )
     SET( EX_PLATFORM_NAME "x64" )
-ELSE( CMAKE_SIZEOF_VOID_P EQUAL 8 ) 
+ELSE( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     MESSAGE( "32 bits compiler detected" )
     SET( EX_PLATFORM 32 )
     SET( EX_PLATFORM_NAME "x86" )
@@ -49,27 +49,27 @@ IF( EX_PLATFORM EQUAL 64 )
   # ---------- Setup output Directories -------------------------
   SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_DIRECTORY_DEBUG} CACHE PATH
     "Single Directory for all Libraries")
-  
+
   # --------- Setup the Executable output Directory -------------
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${RUNTIME_OUTPUT_DIRECTORY_DEBUG} CACHE PATH
     "Single Directory for all Executables.")
-  
+
   # --------- Setup the Executable output Directory -------------
   SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${ARCHIVE_OUTPUT_DIRECTORY_DEBUG} CACHE PATH
-    "Single Directory for all static libraries.") 
+    "Single Directory for all static libraries.")
   ELSEIF(CMAKE_BUILD_TYPE MATCHES Release)
     # ---------- Setup output Directories -------------------------
   SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_DIRECTORY_RELEASE} CACHE PATH
     "Single Directory for all Libraries")
-  
+
   # --------- Setup the Executable output Directory -------------
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${RUNTIME_OUTPUT_DIRECTORY_RELEASE} CACHE PATH
     "Single Directory for all Executables.")
-  
+
   # --------- Setup the Executable output Directory -------------
   SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${ARCHIVE_OUTPUT_DIRECTORY_RELEASE} CACHE PATH
-    "Single Directory for all static libraries.") 
-  ENDIF(CMAKE_BUILD_TYPE MATCHES Debug) 
+    "Single Directory for all static libraries.")
+  ENDIF(CMAKE_BUILD_TYPE MATCHES Debug)
 ELSE( EX_PLATFORM EQUAL 64 )
 # ---------- Setup output Directories -------------------------
 SET (CMAKE_LIBRARY_OUTPUT_DIRECTORY
@@ -89,7 +89,7 @@ ENDIF( EX_PLATFORM EQUAL 64 )
 
 INCLUDE(setlibloc)
 ################FINDING LIBRARY PACKAGES###########################
-MESSAGE(${GTEST_ROOT})
+#MESSAGE(${GTEST_ROOT})
 FIND_PACKAGE(GTEST REQUIRED)
 
 ################FINDING LIBRARY PACKAGES###########################

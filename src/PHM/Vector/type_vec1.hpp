@@ -16,26 +16,27 @@ namespace phm
   {
   public:
 #pragma region CTORS
+    //Apparently g++ can't access members of templated parent class without this->
     type_vec()
     {
-      store[0] = static_cast<T>(0.0);
+      this->store = static_cast<T>(0.0);
     }
 
     template<typename T2>
     type_vec(T2 init)
     {
-      store[0] = static_cast<T>(init);
+      this->store = static_cast<T>(init);
     }
 
     template<typename T2, unsigned A>
     type_vec(const swizzle::VecProxy<T2, A> &proxy)
     {
-      store[0] = static_cast<T>(reinterpret_cast<const T2*>(&proxy)[A]);
+      this->store = static_cast<T>(reinterpret_cast<const T2*>(&proxy)[A]);
     }
 
     operator T()
     {
-      return store[0];
+      return this->store;
     }
 
 #pragma endregion CTORS
@@ -45,17 +46,17 @@ namespace phm
     template<typename T2>
     type_vec<T, 1>& operator= (const type_vec<T2, 1> &rvec)
     {
-      return store[0] == static_cast<T>(rvec[0]);
+      return this->store == static_cast<T>(rvec[0]);
     }
 
     T operator[] (unsigned i) const
     {
-      return store[i];
+      return this->store;//[i];
     }
 
     T& operator[](unsigned i)
     {
-      return store[i];
+      return this->store;//[i];
     }
 
 #pragma endregion OPERATORS
