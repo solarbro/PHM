@@ -1,43 +1,68 @@
 /******************************************************************************/
 /*!
-\file   vector_base_data.hpp
+\filxe  vector_base_data.hpp
 \author Sagnik Chowdhury
 \brief  Contains the Photon renderer math library
 */
 /******************************************************************************/
 #pragma once
-#include "vector_swizzle_proxy.hpp"
+#include "swizzle_proxy.hpp"
+
+#include <type_traits>
 
 namespace phm
 {
-  namespace swizzle
+  template<typename T, unsigned ... indices>
+  using Swizzle = swizzle::VecProxy<T, indices ... >;
+
+  namespace internal
   {
-    template<typename T, unsigned ... indices>
-    using Swizzle = VecProxy<T, indices ... >;
+    namespace MPHelpers
+    {
+      template<unsigned Val0, unsigned ... ValRest>
+      struct RecursiveProduct
+      {
+        static const unsigned Value = Val0 * RecursiveProduct<ValRest ...>::Value;
+      };
 
-#pragma region VEC_GENERIC_INTERNAL
+      template <unsigned Val0>
+      struct RecursiveProduct<Val0>
+      {
+        static const unsigned Value = Val0;
+      };
 
-    template<typename T, unsigned Size>
-    class vec_internal_data
+      template <unsigned ... Values>
+      struct Product
+      {
+        static const unsigned Value = RecursiveProduct<Values ...>::Value;
+      };
+
+      template<>
+      struct Product<>
+      {
+        static const unsigned Value = 1;
+      };
+    }
+
+    #define VARIADIC_CTOR template <typename ... InitList>          \
+                          tensor_internal_data(InitList ... args) : \
+                          store{static_cast<T>(args) ...}{}
+
+    template<typename T, unsigned ... Sizes>
+    class tensor_internal_data
     {
     public:
-      union
-      {
-        T store[Size];
-      };
+      VARIADIC_CTOR
+      T store[MPHelpers::Product<Sizes...>::Value];
     };
 
-#pragma endregion VEC_GENERIC_INTERNAL
-
-#pragma region VEC1_INTERNAL
-
     template<typename T>
-    class vec_internal_data<T, 1>
+    class tensor_internal_data<T, 1>
     {
     public:
+      VARIADIC_CTOR
       union
       {
-#pragma region vec1_swizzle
         T store;
         Swizzle<T, 0> x;
         Swizzle<T, 0, 0> xx;
@@ -48,23 +73,18 @@ namespace phm
         Swizzle<T, 0, 0> rr;
         Swizzle<T, 0, 0, 0> rrr;
         Swizzle<T, 0, 0, 0, 0> rrrr;
-#pragma endregion vec1_swizzle
-
       };
     };
 
-#pragma endregion VEC1_INTERNAL
-
-#pragma region VEC2_INTERNAL
-
     template <typename T>
-    class vec_internal_data<T, 2>
+    class tensor_internal_data<T, 2>
     {
     public:
+      VARIADIC_CTOR
       union
       {
         T store[2];
-#pragma region vec2_xy
+
         Swizzle<T, 0> x;
         Swizzle<T, 1> y;
         Swizzle<T, 0, 0> xx;
@@ -95,8 +115,7 @@ namespace phm
         Swizzle<T, 1, 1, 0, 1> yyxy;
         Swizzle<T, 1, 1, 1, 0> yyyx;
         Swizzle<T, 1, 1, 1, 1> yyyy;
-#pragma endregion vec2_xy
-#pragma region vec2_rg
+
         Swizzle<T, 0> r;
         Swizzle<T, 1> g;
         Swizzle<T, 0, 0> rr;
@@ -127,22 +146,18 @@ namespace phm
         Swizzle<T, 1, 1, 0, 1> ggrg;
         Swizzle<T, 1, 1, 1, 0> gggr;
         Swizzle<T, 1, 1, 1, 1> gggg;
-#pragma endregion vec2_rg
       };
-    };
-
-#pragma endregion VEC2_INTERNAL
-
-#pragma region VEC3_INTERNAL
+    }; //Class Vec2
 
     template <typename T>
-    class vec_internal_data<T, 3>
+    class tensor_internal_data<T, 3>
     {
     public:
+      VARIADIC_CTOR
       union
       {
         T store[3];
-#pragma region vec3_xyz
+
         Swizzle<T, 0> x;
         Swizzle<T, 1> y;
         Swizzle<T, 2> z;
@@ -260,8 +275,7 @@ namespace phm
         Swizzle<T, 2, 2, 2, 0> zzzx;
         Swizzle<T, 2, 2, 2, 1> zzzy;
         Swizzle<T, 2, 2, 2, 2> zzzz;
-#pragma endregion vec3_xyz
-#pragma region vec3_rgb
+
         Swizzle<T, 0> r;
         Swizzle<T, 1> g;
         Swizzle<T, 2> b;
@@ -379,23 +393,18 @@ namespace phm
         Swizzle<T, 2, 2, 2, 0> bbbr;
         Swizzle<T, 2, 2, 2, 1> bbbg;
         Swizzle<T, 2, 2, 2, 2> bbbb;
-#pragma endregion vec3_rgb
-
       };
-    };
-
-#pragma endregion VEC3_INTERNAL
-
-#pragma region VEC4_INTERNAL
+    };//Class vec3 internal
 
     template <typename T>
-    class vec_internal_data<T, 4>
+    class tensor_internal_data<T, 4>
     {
     public:
+      VARIADIC_CTOR
       union
       {
         T store[4];
-#pragma region vec4_xyzw
+
         Swizzle<T, 0> x;
         Swizzle<T, 1> y;
         Swizzle<T, 2> z;
@@ -736,8 +745,7 @@ namespace phm
         Swizzle<T, 3, 3, 3, 1> wwwy;
         Swizzle<T, 3, 3, 3, 2> wwwz;
         Swizzle<T, 3, 3, 3, 3> wwww;
-#pragma endregion vec4_xyzw
-#pragma region vec4_rgba
+
         Swizzle<T, 0> r;
         Swizzle<T, 1> g;
         Swizzle<T, 2> b;
@@ -1078,12 +1086,8 @@ namespace phm
         Swizzle<T, 3, 3, 3, 1> aaag;
         Swizzle<T, 3, 3, 3, 2> aaab;
         Swizzle<T, 3, 3, 3, 3> aaaa;
-#pragma endregion vec4_rgba
-
       };
-    };
-
-#pragma endregion VEC4_INTERNAL
-
-  }
-}
+    };//Class vec4
+  }//namespace internal
+}//namespace phm
+#undef VARIADIC_CTOR
