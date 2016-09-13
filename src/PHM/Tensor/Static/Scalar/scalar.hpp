@@ -1,6 +1,6 @@
 /******************************************************************************/
 /*!
-\file   vector_base_data.hpp
+\file   scalar.hpp
 \author Sagnik Chowdhury
 \brief  Contains the Photon renderer math library
 */
@@ -12,7 +12,7 @@ namespace phm
 {
   //Rank 0 tensors are scalars so allow cast operator.
   template <typename T>
-  class tensor<T> : public internal::tensor_internal_data<T, 1>
+  class tensor<T, 1, 1> : public internal::tensor_internal_data<T, 1>
   {
   public:
     tensor(T scalar = 0) :
@@ -23,4 +23,7 @@ namespace phm
       return this->store;
     }
   };
+
+  template <typename T>
+  using scalar = tensor<T, 1, 1>;
 }

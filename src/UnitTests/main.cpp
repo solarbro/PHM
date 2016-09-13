@@ -8,6 +8,9 @@
 #include "../PHM/phm.hpp"
 
 #include "../PHM/Tensor/Static/tensor.hpp"
+#include "../PHM/Tensor/Static/Matrix/matrix.hpp"
+#include "../PHM/Tensor/Static/Vector/vector.hpp"
+#include "../PHM/Tensor/Static/Scalar/scalar.hpp"
 #include <iostream>
 
 int main(int argc, char** argv)
@@ -51,14 +54,39 @@ int main(int argc, char** argv)
 
   //RUN_ALL_TESTS();
 
-  phm::tensor<float, 2> tensorvec2({1, 2});
+  phm::tensor<float, 2, 1> tensorvec2({1, 2});
   std::cout << tensorvec2.x << ", " << tensorvec2.y << std::endl;
 
-  phm::tensor<int, 20> tensorvec20({1, 2, 3, 4, 5});
+  phm::tensor<int, 20, 1> tensorvec20({1, 2, 3, 4, 5});
   for(int i = 0; i < 20; ++i)
     std::cout << tensorvec20.store[i] << ", ";
   std::cout << std::endl;
 
+  phm::tensor<int, 3, 3> mat3x3i({1, 2, 3, 4, 5, 6, 7 , 8, 9});
+  phm::tensor<float, 3, 3>mat3x3f({9, 8, 7, 6, 5, 4, 3, 2, 1});
+
+  auto result = mat3x3f + mat3x3i;
+
+  for(int i = 0; i < 9; ++i)
+    std::cout << result.store[i] << ", ";
+  std::cout << std::endl;
+
+  for(int i = 0; i < 3; ++i)
+  {
+    for(int j = 0; j < 3; ++j)
+      std::cout << mat3x3i[i][j] << "\t";
+    std::cout << std::endl;
+  }
+
+  phm::tensor<int, 2, 2, 2, 2> order4{1111, 1112, 1121, 1122, 1211, 1212, 1221, 1222, 2111, 2112, 2121, 2122, 2211, 2212, 2221, 2222};
+
+  for(int i = 0; i < 2; ++i)
+    for(int j = 0; j < 2; ++j)
+      for(int k = 0; k < 2; ++k)
+        for(int l = 0; l < 2; ++l)
+          std::cout << order4[i][j][k][l] << ", ";
+
+  std::cout << std::endl;
   // phm::tensor<double> scalar;
   // std::cout << scalar << std::endl;
   // scalar = 5;

@@ -1,6 +1,6 @@
 /******************************************************************************/
 /*!
-\filxe  vector_base_data.hpp
+\file   vector_base_data.hpp
 \author Sagnik Chowdhury
 \brief  Contains the Photon renderer math library
 */
@@ -42,6 +42,11 @@ namespace phm
       {
         static const unsigned Value = 1;
       };
+
+      //get the common type of the provided data types.
+      //Helps select the proper template argument when supporting mixed types
+      template <typename... args>
+      using ptype = typename std::common_type<args...>::type;
     }
 
     #define VARIADIC_CTOR template <typename ... InitList>          \
