@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Internal/tensor_internal.hpp"
+#include <initializer_list>
 
 namespace phm
 {
@@ -15,9 +16,11 @@ namespace phm
   {
     //Strip last argument of a parameter pack
     template <typename T, unsigned ... args>
-    struct strip;
+    struct strip_last;
 
-
+    template <typename T, unsigned ... args>
+    struct strip_first;
+    //This will be completed after the generic definition of the tensor class.
   }
   //Generic tensor class
   template <typename T, unsigned D0 = 1, unsigned D1 = 1, unsigned ... Dimensions>
@@ -27,18 +30,23 @@ namespace phm
     tensor() :
       internal::tensor_internal_data<T, D0, D1, Dimensions ...>{0}{}
 
-    template <typename FirstType, typename ... OtherTypes>
-    tensor(FirstType Init0, OtherTypes ... Initializers) :
-        internal::tensor_internal_data<T, D0, D1, Dimensions ...>{Init0, Initializers ...}{}
-
-    typename MPHelpers::strip<T, D0, D1, Dimensions...>::type& operator[](unsigned sub)
+    // template <typename FirstType, typename ... OtherTypes>
+    // tensor(FirstType Init0, OtherTypes ... Initializers) :
+    //     internal::tensor_internal_data<T, D0, D1, Dimensions ...>{Init0, Initializers ...}{}
+    //
+    tensor(std::initializer_list<tensor<T, D1, Dimensions...>> Initializers)
     {
-      return (reinterpret_cast<typename MPHelpers::strip<T, D0, D1, Dimensions...>::type*>(this))[sub];
+      std::memcpy(this->store, Initializers.begin(), sizeof(this->store));
     }
 
-    typename MPHelpers::strip<T, D0, D1, Dimensions...>::type operator[](unsigned sub) const
+    tensor<T, D1, Dimensions...>& operator[](unsigned sub)
     {
-      return (reinterpret_cast<typename MPHelpers::strip<T, D0, D1, Dimensions...>::type*>(this))[sub];
+      return (reinterpret_cast<tensor<T, D1, Dimensions...>*>(this))[sub];
+    }
+
+    tensor<T, D1, Dimensions...> operator[](unsigned sub) const
+    {
+      return (reinterpret_cast<tensor<T, D1, Dimensions...>*>(this))[sub];
     }
   };
 
@@ -46,18 +54,32 @@ namespace phm
   {
     //strip metaprogram contd.
     //Done here as it needs to know the tensor class.
+    template <typename T, unsigned arg0, unsigned ... argsRest>
+    struct strip_first<T, arg0, argsRest...>
+    {
+      using type = tensor<T, argsRest...>;
+    };
+
+    template <typename T, unsigned arg0, unsigned arg1, unsigned arg2>
+    struct strip_first<T, arg0, arg1, arg2>
+    {
+      using type = tensor<T, arg1, arg2>;
+    };
+
+    //Specialize for 3 subscripts (turns into a matrix)
     template <typename T, unsigned last_arg0, unsigned last_arg1, unsigned last_arg2>
-    struct strip<T, last_arg0, last_arg1, last_arg2>
+    struct strip_last<T, last_arg0, last_arg1, last_arg2>
     {
       using type = tensor<T, last_arg0, last_arg1>;
     };
-
+    //Specialize for 4 subscripts (turns into a 3rd order tensor)
     template <typename T, unsigned la0, unsigned la1, unsigned la2, unsigned la3>
-    struct strip<T, la0, la1, la2, la3>
+    struct strip_last<T, la0, la1, la2, la3>
     {
       using type = tensor<T, la0, la1, la2>;
     };
 
+    //Concat will be used to reattach the front args that get removed
     template <typename , typename>
     struct concat{};
 
@@ -67,10 +89,13 @@ namespace phm
       using type = tensor<T, args0..., args1...>;
     };
 
+    //For order 5 or more, the first 2 args are stripped out and the rest
+    //recurse till the sequence is resolved. Then they are recursively concatenated
+    //back into the original sequence of args.
     template <typename T, unsigned arg0, unsigned arg1, unsigned ... argsRest>
-    struct strip<T, arg0, arg1, argsRest...>
+    struct strip_last<T, arg0, arg1, argsRest...>
     {
-      using type = typename concat<tensor<T, arg0, arg1>, typename strip<T, argsRest...>::type>::type;
+      using type = typename concat<tensor<T, arg0, arg1>, typename strip_last<T, argsRest...>::type>::type;
     };
   }
 

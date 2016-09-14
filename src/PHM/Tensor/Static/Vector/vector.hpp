@@ -22,12 +22,12 @@ namespace phm
     tensor(FirstType Init0, OtherTypes ... Initializers) :
         internal::tensor_internal_data<T, D>{Init0, Initializers ...}{}
 
-    T& operator[](unsigned sub)
+    tensor<T>& operator[](unsigned sub)
     {
-      return this->store[sub];
+        return (*reinterpret_cast<tensor<T>*>(this))[sub];
     }
 
-    T operator[](unsigned sub) const
+    tensor<T> operator[](unsigned sub) const
     {
       return this->store[sub];
     }
@@ -54,12 +54,12 @@ namespace phm
       return *reinterpret_cast<tensor<T, 1, D>*>(this);
     }
 
-    T& operator[](unsigned sub)
+    tensor<T>& operator[](unsigned sub)
     {
-      return this->store[sub];
+      return (reinterpret_cast<tensor<T>*>(this->store))[sub];
     }
 
-    T operator[](unsigned sub) const
+    tensor<T> operator[](unsigned sub) const
     {
       return this->store[sub];
     }

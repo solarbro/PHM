@@ -6,6 +6,8 @@
 */
 /******************************************************************************/
 #include "../tensor.hpp"
+#include <initializer_list>
+#include <array>
 
 namespace phm
 {
@@ -16,18 +18,19 @@ namespace phm
     tensor():
       internal::tensor_internal_data<T, D0, D1>{0}{}
 
-    template <typename FirstType, typename ... OtherTypes>
-    tensor(FirstType Init0, OtherTypes ... Initializers) :
-        internal::tensor_internal_data<T, D0, D1>{Init0, Initializers ...}{}
-
-    tensor<T, D0>& operator[](unsigned sub)
+    tensor(std::initializer_list<tensor<T, D1>> InitList)
     {
-      return (reinterpret_cast<tensor<T, D0>*>(this))[sub];
+      std::memcpy(this->store, InitList.begin(), sizeof(this->store));
     }
 
-    tensor<T, D0> operator[](unsigned sub) const
+    tensor<T, D1>& operator[](unsigned sub)
     {
-      return (reinterpret_cast<tensor<T, D0>*>(this))[sub];
+      return (reinterpret_cast<tensor<T, D1>*>(this))[sub];
+    }
+
+    tensor<T, D1> operator[](unsigned sub) const
+    {
+      return (reinterpret_cast<tensor<T, D1>*>(this))[sub];
     }
   };
 
