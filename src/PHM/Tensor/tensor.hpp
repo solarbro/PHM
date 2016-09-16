@@ -29,11 +29,7 @@ namespace phm
   public:
     tensor() :
       internal::tensor_internal_data<T, D0, D1, Dimensions ...>{0}{}
-
-    // template <typename FirstType, typename ... OtherTypes>
-    // tensor(FirstType Init0, OtherTypes ... Initializers) :
-    //     internal::tensor_internal_data<T, D0, D1, Dimensions ...>{Init0, Initializers ...}{}
-    //
+    
     tensor(std::initializer_list<tensor<T, D1, Dimensions...>> Initializers)
     {
       std::memcpy(this->store, Initializers.begin(), sizeof(this->store));

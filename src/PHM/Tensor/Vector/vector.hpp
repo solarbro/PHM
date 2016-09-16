@@ -22,6 +22,16 @@ namespace phm
     tensor(FirstType Init0, OtherTypes ... Initializers) :
         internal::tensor_internal_data<T, D>{Init0, Initializers ...}{}
 
+    template <typename T2, unsigned ... indices>
+    tensor(const swizzle::VecProxy<T2, indices...> &proxy)
+    {
+      static_assert(sizeof...(indices) >= D, "Illegal construction parameter. Insufficient data provided.");
+      const T2* rhs_ptr = reinterpret_cast<const T2*>(&proxy);
+      unsigned ix_array[] = { indices... };
+      for (unsigned i = 0; i < D; ++i)
+        this->store[i] = static_cast<T>(rhs_ptr[ix_array[i]]);
+    }
+
     tensor<T>& operator[](unsigned sub)
     {
         return (*reinterpret_cast<tensor<T>*>(this))[sub];
@@ -47,6 +57,18 @@ namespace phm
     template <typename FirstType, typename ... OtherTypes>
     tensor(FirstType Init0, OtherTypes ... Initializers) :
         internal::tensor_internal_data<T, D>{Init0, Initializers ...}{}
+
+
+    template <typename T2, unsigned ... indices>
+    tensor(const swizzle::VecProxy<T2, indices...> &proxy)
+    {
+      static_assert(sizeof...(indices) >= D, "Illegal construction parameter. Insufficient data provided.");
+      const T2* rhs_ptr = reinterpret_cast<const T2*>(&proxy);
+      unsigned ix_array[] = { indices... };
+      for (unsigned i = 0; i < D; ++i)
+        this->store[i] = static_cast<T>(rhs_ptr[ix_array[i]]);
+    }
+
 
     //make column matrices implicitly convert to row matrices when necessary
     operator tensor<T, 1, D>()

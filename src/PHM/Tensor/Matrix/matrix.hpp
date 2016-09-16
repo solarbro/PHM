@@ -18,7 +18,7 @@ namespace phm
     tensor():
       internal::tensor_internal_data<T, D0, D1>{0}{}
 
-    tensor(std::initializer_list<tensor<T, D1>> InitList)
+    constexpr tensor(std::initializer_list<tensor<T, D1>> InitList)
     {
       std::memcpy(this->store, InitList.begin(), sizeof(this->store));
     }
