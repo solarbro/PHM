@@ -1,8 +1,17 @@
 # PHM
 ###Photon Vector Math Library###
 
-PHM is a templated vector math library that supports glsl-style syntax.
+PHM is a templated vector math library.
+It supports tensors of arbitrary order and size, including row/column vectors, and matrices.
 
-It is designed primarily with graphics applications in mind, so it ensures data is aligned in a graphics-friendly manner, and comes with functions and features that should feel familiar to any graphics programmer. It supports swizzle for vectors of sizes one to four.
+###Features###
+* Arbitrary size tensors
+* GLSL style swizzle for 1 to 4 component vectors
+* Nested brace-enclosed initializer lists for matrices and higher order tensors (e.g. myMatrix2x2 = {{a, b}, {c, d}})
+* Multi-dimensional subscripting (e.g. myMatrix[a][b], myTensorND[a][b][c]...[n])
+* Arithmetic operations for vectors and matrices
+* Affine transformation functions for 3D graphics applications
 
-However, it can be used for general mathematical applications, supporting arbitrary sized vectors and matrices, in column or row major, with numerous operations and functions useful for linear algebra.
+TODO:
+* Add expression templates
+* Add SSE for supported types (e.g. float4, double2, float4xn etc.)
