@@ -2,7 +2,7 @@
 /*!
 \filxe  Constants.hpp
 \author Sagnik Chowdhury
-\brief  Interface for getting various commonly used math constants 
+\brief  Interface for getting various commonly used math constants
 */
 /******************************************************************************/
 #include <limits>
@@ -26,7 +26,7 @@ namespace phm
     const static T epsilon;
     const static T inf;
   };
-#pragma region INITIALIZATION
+
   template<typename T> const T Constant<T>::pi = static_cast<T>(3.14159265358979323846264338327950288);
   template<typename T> const T Constant<T>::half_pi = static_cast<T>(1.57079632679);
   template<typename T> const T Constant<T>::two_pi = static_cast<T>(6.28318530718);
@@ -36,5 +36,5 @@ namespace phm
   template<typename T> const T Constant<T>::golden_ratio = static_cast<T>(1.61803398874989484820458683436563811);
   template<typename T> const T Constant<T>::epsilon = std::numeric_limits<T>::epsilon();
   template<typename T> const T Constant<T>::inf = std::numeric_limits<T>::infinity();
-#pragma endregion INITIALIZATION
+  
 }

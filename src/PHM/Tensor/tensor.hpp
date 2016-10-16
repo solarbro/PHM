@@ -9,6 +9,7 @@
 
 #include "Internal/tensor_internal.hpp"
 #include <initializer_list>
+#include <cstring>
 
 namespace phm
 {
@@ -29,7 +30,7 @@ namespace phm
   public:
     tensor() :
       internal::tensor_internal_data<T, D0, D1, Dimensions ...>{0}{}
-    
+
     tensor(std::initializer_list<tensor<T, D1, Dimensions...>> Initializers)
     {
       std::memcpy(this->store, Initializers.begin(), sizeof(this->store));

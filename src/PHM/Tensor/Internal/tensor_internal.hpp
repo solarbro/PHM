@@ -13,7 +13,7 @@
 namespace phm
 {
   template<typename T, unsigned ... indices>
-  using Swizzle = swizzle::VecProxy<T, indices ... >;
+  using Swizzle = swizzle::Proxy<T, indices ... >;
 
   namespace internal
   {
@@ -53,6 +53,16 @@ namespace phm
                           tensor_internal_data(InitList ... args) : \
                           store{static_cast<T>(args) ...}{}
 
+    #define SWIZZLE_CTOR(D) template <typename T2, unsigned ... Indices> \
+                            tensor_internal_data(const Swizzle<T2, Indices...> &proxy){ \
+                            static_assert(sizeof...(Indices) >= D, "Illegal construction parameter. Insufficient data provided.");\
+                            const T2* rhs_ptr = reinterpret_cast<const T2*>(&proxy);\
+                            unsigned ix_array[] = { Indices... };\
+                            for (unsigned i = 0; i < D; ++i)\
+                                this->store[i] = static_cast<T>(rhs_ptr[ix_array[i]]);\
+                            }
+
+
     template<typename T, unsigned ... Sizes>
     class tensor_internal_data
     {
@@ -66,6 +76,7 @@ namespace phm
     {
     public:
       VARIADIC_CTOR
+    //   SWIZZLE_CTOR(1)
       union
       {
         T store;
@@ -86,6 +97,7 @@ namespace phm
     {
     public:
       VARIADIC_CTOR
+    //   SWIZZLE_CTOR(2)
       union
       {
         T store[2];
@@ -159,6 +171,7 @@ namespace phm
     {
     public:
       VARIADIC_CTOR
+    //   SWIZZLE_CTOR(3)
       union
       {
         T store[3];
@@ -406,6 +419,7 @@ namespace phm
     {
     public:
       VARIADIC_CTOR
+    //   SWIZZLE_CTOR(4)
       union
       {
         T store[4];
@@ -1096,3 +1110,4 @@ namespace phm
   }//namespace internal
 }//namespace phm
 #undef VARIADIC_CTOR
+#undef SWIZZLE_CTOR

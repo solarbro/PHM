@@ -15,12 +15,26 @@
 
 int main(int argc, char** argv)
 {
+    for(int i = 1; i < argc; ++i)
+        std::cout << argv[i] << std::endl;
   //testing::InitGoogleTest(&argc, argv);
 
   //RUN_ALL_TESTS();
 
   phm::tensor<float, 2, 1> tensorvec2({1, 2});
+  std::cout << "var tensorvec2" << std::endl;
   std::cout << tensorvec2.x << ", " << tensorvec2.y << std::endl;
+  phm::vector<float, 3> f3 = tensorvec2.xxy;
+  std::cout << "var tensorvec2.xxy = var f3" << std::endl;
+  std::cout << f3.r << ", " << f3.g << ", " << f3.b << std::endl;
+  // phm::tensor<float, 3> f3 = {0, 1, 2};
+  // f3.zy = tensorvec2;
+  f3.xyz = f3.yzx;
+  std::cout << "var f3 xyz=yzx" << std::endl;
+  std::cout << f3.x << ", " << f3.y << ", " << f3.z << std::endl;
+  f3.yz = tensorvec2;
+  std::cout << "var f3.x, tensorvec2" << std::endl;
+  std::cout << f3.x << ", " << f3.y << ", " << f3.z << std::endl;
 
   phm::tensor<int, 20, 1> tensorvec20({1, 2, 3, 4, 5});
   for(int i = 0; i < 20; ++i)
@@ -32,7 +46,6 @@ int main(int argc, char** argv)
 
   auto result = mat3x3f + mat3x3i;
 
-  phm::vector<float, 3> f3 = tensorvec2.xxy;
 
   for(int i = 0; i < 9; ++i)
     std::cout << result.store[i] << ", ";
