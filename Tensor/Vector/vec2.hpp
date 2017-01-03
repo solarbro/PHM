@@ -10,7 +10,7 @@
 namespace phm
 {
   template <typename T>
-  using vec2 = tensor<T, 2, 1>
-
+  using vec2 = tensor<T, 2, 1>;
+  //Add 2D vector specific functions here
 
 }
