@@ -1,14 +1,13 @@
 #ifndef NS_COMPLEX_HPP
 #define NS_COMPLEX_HPP
 
-#include "Basic.hpp"
-
 namespace phm
 {
+    template <typename T>
     struct complex
     {
-        real a;
-        real b;
+        T a;
+        T b;
         //complex number of form a + ib
     };
     //define complex number operations
