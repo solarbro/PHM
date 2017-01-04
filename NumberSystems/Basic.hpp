@@ -12,7 +12,7 @@ namespace phm
         High,    //Custom higher precision type
     };
     //TODO: Use precision as template parameter
-    
+
     using natural = std::uint64_t;
     using integer = std::int64_t;
     using real    = double; //option for higher precision?
