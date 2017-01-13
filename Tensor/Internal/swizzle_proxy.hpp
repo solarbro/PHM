@@ -7,6 +7,8 @@
 /******************************************************************************/
 #pragma once
 
+#include <type_traits>
+
 namespace phm
 {
   namespace swizzle
