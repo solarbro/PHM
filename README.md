@@ -15,6 +15,3 @@ It supports tensors of arbitrary order and size, including row/column vectors, a
 TODO:
 * Add expression templates
 * Add SSE for supported types (e.g. float4, double2, float4xn etc.)
-
-NOTE:
-* This is not 
